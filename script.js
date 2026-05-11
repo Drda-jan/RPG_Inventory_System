@@ -45,4 +45,28 @@ class Polozka {
         this.trvaniEfektu = trvaniEfektu;
         this.multiplikatorRarity = multiplikatorRarity;
     }
+    getId() {
+        return this.id;
+    }
+    getNazev() {
+        return this.nazev;
+    }
+    getVaha() {
+        return this.vaha;
+    }
+    getZakladniCena() {
+        return this.zakladniCena;
+    }
+    getRarity() {
+        return this.rarity;
+    }
+    getTrvaniEfektu() {
+        return this.trvaniEfektu;
+    }
+    getMultiplikatorRarity() {
+        return this.multiplikatorRarity;
+    }
+    toString() {
+        return `[${this.constructor.name}] ${this.nazev} | Váha: ${this.vaha} kg | Cena: ${this.zakladniCena} zl | Efektivita: ${this.vypocitejEfektivitu().toFixed(2)}`;
+    }
 }
