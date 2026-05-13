@@ -72,3 +72,97 @@ const rawLektvary = [
         return `[${this.constructor.name}] ${this.nazev} | Váha: ${this.vaha} kg | Cena: ${this.zakladniCena} zl | Efektivita: ${this.vypocitejEfektivitu().toFixed(2)}`;
 }
 }
+
+class Zbran extends Polozka {
+    private readonly typ: string;
+    private readonly poskozeni: number;
+    private readonly rychlost: number;
+
+    constructor(id: string, nazev: string, vaha: number, popis: string, zakladniCena: number, rarity: string, trvaniEfektu: number, multiplikatorRarity: number, typ: string, poskozeni: number, rychlost: number) 
+    {
+        super(id, nazev, vaha, popis, zakladniCena, rarity,0, trvaniEfektu, multiplikatorRarity);
+        if (poskozeni <= 0) throw new Error(`poskozeni musí být kladné, obdrženo: ${poskozeni}`);
+        this.poskozeni = poskozeni;
+        this.rychlost = rychlost;
+        this.typ = typ;
+    }
+
+    public getPoskozeni(): number {
+        return this.poskozeni;
+    }
+    public getRychlost(): number {
+        return this.rychlost;
+    }
+    public getTyp(): string {
+        return this.typ;
+    }
+    public vypocitejEfektivitu(): number {
+        return (this.poskozeni * this.getMultiplikatorRarity()) ();
+    }
+}
+    class Brneni extends Polozka {
+        private readonly obrana: number;
+        private readonly rychlost: number;
+        private readonly typ: string;
+
+        constructor(id: string, nazev: string, vaha: number, popis: string, zakladniCena: number, rarity: string, multiplikatorRarity: number, obrana: number, rychlost: number, typ: string) {
+        super(id, nazev, vaha, popis, zakladniCena, rarity, 0, multiplikatorRarity);
+        if (obrana <= 0) throw new Error(`obrana musí být kladná, obdrženo: ${obrana}`);
+        this.obrana   = obrana;
+        this.rychlost = rychlost;
+        this.typ      = typ;
+    }
+
+    public getObrana(): number {
+        return this.obrana;
+    }
+    public getRychlost(): number {
+        return this.rychlost;
+    }
+    public getTyp(): string {
+        return this.typ;
+    }
+    public vypocitejEfektivitu(): number {
+        return this.obrana / this.getVaha();
+    }
+}
+    class Lektvar extends Polozka {
+        private readonly efekt: string;
+        private readonly typ: string;
+
+        constructor(id: string, nazev: string, vaha: number, popis: string, zakladniCena: number, rarity: string, multiplikatorRarity: number, trvaniEfektu: number, efekt: string, typ: string) {
+        super(id, nazev, vaha, popis, zakladniCena, rarity, trvaniEfektu, multiplikatorRarity);
+        if (!efekt || efekt.trim() === "") throw new Error("efekt nesmí být prázdný.");
+        this.efekt = efekt;
+        this.typ   = typ;
+    }
+    public getEfekt(): string {
+        return this.efekt;
+    }
+    public getTyp(): string {
+        return this.typ;
+    }
+    public vypocitejEfektivitu(): number { 
+        if (this.getTrvaniEfektu() > 0) {
+            return 10 + this.getTrvaniEfektu() /10
+        }
+        return 10;
+    }
+}
+
+class Inventar {
+    private polozky: Polozka[] = [];
+    private readonly maxKapacita: number;   
+
+    constructor(maxKapacita: number = 50) {
+        if (maxKapacita <= 0) throw new Error(`maxKapacita musí být kladná, obdrženo: ${maxKapacita}`);
+        this.maxKapacita = maxKapacita;
+    }
+
+    public pridejPolozku(polozka: Polozka): void {
+         const novaVaha = this.spoctiCelkouVahu() + polozka.getVaha();
+        if (novaVaha > this.maxKapacita) {
+            throw new Error(`"${polozka.getNazev()}" by překročilo kapacitu! (${this.spoctiCelkouVahu().toFixed(1)} + ${polozka.getVaha()} > ${this.maxKapacita} kg)`);
+        }
+        this.polozky.push(polozka);
+    }
