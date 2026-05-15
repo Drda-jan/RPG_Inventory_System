@@ -1,10 +1,10 @@
 // script.ts
 // Hlavní soubor – zde se vše propojí dohromady.
 // Importujeme třídy a data ze všech ostatních souborů.
-import { Zbran } from "./weapon";
-import { Brneni } from "./armor";
-import { Lektvar } from "./potion";
-import { rawZbrane, rawBrneni, rawLektvary } from "./data";
+import { Zbran } from "./weapon.js";
+import { Brneni } from "./armor.js";
+import { lektvar } from "./potion.js";
+import { rawZbrane, rawBrneni, rawLektvary } from "./data.js";
 // Inventar drží seznam všech předmětů a hlídá, aby postava nebyla přetížená.
 // Pole "polozky" může obsahovat Zbran, Brneni i Lektvar najednou –
 // všechny mají společný typ Polozka, takže je lze ukládat dohromady.
@@ -50,7 +50,7 @@ class Inventar {
 // Oživení dat – z číselníku (plain objekty) vytvoříme instance tříd.
 const zbrane = rawZbrane.map(d => new Zbran(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, 0, d.multiplikatorRarity, d.typ, d.poskozeni, d.rychlost));
 const brneni = rawBrneni.map(d => new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.obrana, d.rychlost, d.typ));
-const lektvary = rawLektvary.map(d => new Lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
+const lektvary = rawLektvary.map(d => new lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
 [...zbrane, ...brneni, ...lektvary].forEach(p => inventar.pridejPolozku(p));

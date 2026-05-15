@@ -2,7 +2,7 @@
 // Třída Zbran – potomek Polozka.
 // "import" načte třídu Polozka z jiného souboru, abychom z ní mohli dědit.
  
-import { Polozka } from "./polozka";
+import { Polozka } from "./polozka.js";
  
 // Zbran dědí z Polozka – přebírá všechny její vlastnosti a přidává své: typ, poskozeni, rychlost.
 export class Zbran extends Polozka {
