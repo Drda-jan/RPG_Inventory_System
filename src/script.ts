@@ -70,3 +70,12 @@ const lektvary = rawLektvary.map(d =>
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
 [...zbrane, ...brneni, ...lektvary].forEach(p => inventar.pridejPolozku(p));
+
+
+// Testování polymorfismu – projdeme všechny předměty a vypíšeme jejich efektivitu.
+// Každý předmět zavolá svou vlastní verzi vypocitejEfektivitu() – to je polymorfismus.
+const vsechnyPredmety: Polozka[] = [...zbrane, ...brneni, ...lektvary];
+
+vsechnyPredmety.forEach(p => {
+    console.log(`${p.getNazev()} | typ: ${p.constructor.name} | efektivita: ${p.vypocitejEfektivitu().toFixed(2)}`);
+});
