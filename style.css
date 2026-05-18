@@ -1,0 +1,450 @@
+/* =====================================================
+   RESET & ZÁKLADNÍ NASTAVENÍ
+===================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --drevo-tmave:   #8B5E3C;
+    --drevo-stredni: #C4895A;
+    --drevo-svetle:  #E0B27A;
+    --drevo-plocha:  #D4A574;
+    --okraj-tmave:   #5C3D1E;
+    --okraj-svetle:  #F0C896;
+    --pozadi:        #3D2B1F;
+    --text:          #3D2B1F;
+    --text-svetly:   #6B4423;
+    --zluta:         #F5C842;
+    --zelena:        #5CB85C;
+    --cervena:       #C0392B;
+    --modra:         #5B8DD9;
+    --pixel: 2px;
+}
+
+body {
+    background: var(--pozadi);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    image-rendering: pixelated;
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.08) 31px, rgba(0,0,0,0.08) 32px),
+        repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(0,0,0,0.08) 31px, rgba(0,0,0,0.08) 32px);
+}
+
+/* =====================================================
+   PIXEL BORDER MIXIN – simulace pixel art rámu
+===================================================== */
+.pixel-box {
+    background: var(--drevo-plocha);
+    border-top:    3px solid var(--okraj-svetle);
+    border-left:   3px solid var(--okraj-svetle);
+    border-right:  3px solid var(--okraj-tmave);
+    border-bottom: 3px solid var(--okraj-tmave);
+    box-shadow: inset 1px 1px 0 var(--drevo-svetle), inset -1px -1px 0 var(--drevo-tmave);
+}
+
+.pixel-box-dark {
+    background: var(--drevo-stredni);
+    border-top:    3px solid var(--okraj-tmave);
+    border-left:   3px solid var(--okraj-tmave);
+    border-right:  3px solid var(--okraj-svetle);
+    border-bottom: 3px solid var(--okraj-svetle);
+}
+
+/* =====================================================
+   HLAVNÍ OKNO
+===================================================== */
+.hlavni-okno {
+    width: 100%;
+    max-width: 860px;
+    background: var(--drevo-tmave);
+    border-top:    4px solid #C4895A;
+    border-left:   4px solid #C4895A;
+    border-right:  4px solid #3D2000;
+    border-bottom: 4px solid #3D2000;
+    box-shadow: 4px 4px 0 #1a0f00, -1px -1px 0 #D4A574;
+}
+
+/* titulní lišta */
+.titul-lista {
+    background: var(--drevo-tmave);
+    border-bottom: 3px solid var(--okraj-tmave);
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.titul-lista span {
+    font-size: 9px;
+    color: var(--okraj-svetle);
+    text-shadow: 1px 1px 0 var(--okraj-tmave);
+    letter-spacing: 1px;
+}
+
+/* =====================================================
+   ROZLOŽENÍ OBSAHU
+===================================================== */
+.obsah {
+    display: grid;
+    grid-template-columns: 44px 1fr 180px;
+    gap: 6px;
+    padding: 6px;
+}
+
+@media (max-width: 680px) {
+    .obsah {
+        grid-template-columns: 1fr;
+    }
+    .levy-panel { flex-direction: row; }
+}
+
+/* =====================================================
+   LEVÝ PANEL – ikony kategorií
+===================================================== */
+.levy-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kategorie-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-svetle);
+    border-left:   2px solid var(--okraj-svetle);
+    border-right:  2px solid var(--okraj-tmave);
+    border-bottom: 2px solid var(--okraj-tmave);
+    transition: none;
+    border-radius: 0;
+    line-height: 1;
+}
+
+.kategorie-btn:hover,
+.kategorie-btn.aktivni {
+    background: var(--drevo-plocha);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+}
+
+/* =====================================================
+   STŘEDNÍ PANEL – mřížka inventáře + nabídka
+===================================================== */
+.stredni-panel { display: flex; flex-direction: column; gap: 6px; }
+
+/* záložky */
+.zalozky {
+    display: flex;
+    gap: 3px;
+}
+
+.zalozka {
+    padding: 4px 10px;
+    font-size: 7px;
+    cursor: pointer;
+    color: var(--text-svetly);
+    background: var(--drevo-tmave);
+    border-top:    2px solid var(--okraj-svetle);
+    border-left:   2px solid var(--okraj-svetle);
+    border-right:  2px solid var(--okraj-tmave);
+    border-bottom: 2px solid var(--drevo-tmave);
+    letter-spacing: 0.5px;
+}
+
+.zalozka.aktivni {
+    background: var(--drevo-plocha);
+    color: var(--text);
+    border-bottom: 2px solid var(--drevo-plocha);
+}
+
+/* mřížka slotů */
+.mrizka-wrap {
+    background: var(--drevo-plocha);
+    border-top:    3px solid var(--okraj-svetle);
+    border-left:   3px solid var(--okraj-svetle);
+    border-right:  3px solid var(--okraj-tmave);
+    border-bottom: 3px solid var(--okraj-tmave);
+    padding: 6px;
+}
+
+.mrizka-nazev {
+    font-size: 7px;
+    color: var(--text-svetly);
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--drevo-stredni);
+}
+
+/* inventář – grid slotů */
+#inventar-mrizka {
+    display: grid;
+    grid-template-columns: repeat(10, 36px);
+    gap: 3px;
+}
+
+@media (max-width: 680px) {
+    #inventar-mrizka { grid-template-columns: repeat(5, 36px); }
+}
+
+.slot {
+    width: 36px;
+    height: 36px;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    position: relative;
+    transition: none;
+}
+
+.slot:hover { background: var(--drevo-plocha); }
+
+.slot.obsazeny {
+    background: var(--drevo-plocha);
+    border-top:    2px solid var(--okraj-svetle);
+    border-left:   2px solid var(--okraj-svetle);
+    border-right:  2px solid var(--okraj-tmave);
+    border-bottom: 2px solid var(--okraj-tmave);
+}
+
+.slot.vybran {
+    background: #F0D090;
+    border-color: var(--zluta);
+}
+
+.slot-pocet {
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 5px;
+    color: var(--text);
+    text-shadow: 1px 0 0 var(--drevo-svetle), 0 1px 0 var(--drevo-svetle);
+}
+
+/* nabídka – seznam řádků */
+#nabidka-seznam {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#nabidka-seznam::-webkit-scrollbar { width: 6px; }
+#nabidka-seznam::-webkit-scrollbar-track { background: var(--drevo-stredni); }
+#nabidka-seznam::-webkit-scrollbar-thumb { background: var(--okraj-tmave); }
+
+.nabidka-radek {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+    cursor: pointer;
+}
+
+.nabidka-radek:hover,
+.nabidka-radek.vybran {
+    background: var(--drevo-plocha);
+}
+
+.nabidka-radek.uz-pridano { opacity: 0.5; cursor: default; }
+
+.nabidka-ikona { font-size: 14px; width: 20px; text-align: center; }
+.nabidka-nazev { flex: 1; font-size: 6px; color: var(--text); }
+.nabidka-vaha  { font-size: 5px; color: var(--text-svetly); }
+
+.btn-plus {
+    width: 20px;
+    height: 20px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--drevo-plocha);
+    border-top:    2px solid var(--okraj-svetle);
+    border-left:   2px solid var(--okraj-svetle);
+    border-right:  2px solid var(--okraj-tmave);
+    border-bottom: 2px solid var(--okraj-tmave);
+    cursor: pointer;
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+.btn-plus:active {
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+}
+
+.btn-plus:disabled { opacity: 0.4; cursor: default; }
+
+/* =====================================================
+   PRAVÝ PANEL – detail předmětu
+===================================================== */
+.pravy-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-box {
+    background: var(--drevo-plocha);
+    border-top:    3px solid var(--okraj-svetle);
+    border-left:   3px solid var(--okraj-svetle);
+    border-right:  3px solid var(--okraj-tmave);
+    border-bottom: 3px solid var(--okraj-tmave);
+    padding: 7px;
+}
+
+.detail-label {
+    font-size: 6px;
+    color: var(--text-svetly);
+    margin-bottom: 3px;
+}
+
+.detail-hodnota {
+    font-size: 8px;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.detail-ikona-velka {
+    font-size: 32px;
+    text-align: center;
+    display: block;
+    margin: 6px 0;
+}
+
+.efektivita-radek {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+    padding: 4px 6px;
+    margin-bottom: 5px;
+}
+
+.efektivita-radek span:first-child { font-size: 5px; color: var(--text-svetly); }
+.efektivita-radek span:last-child  { font-size: 9px; color: var(--zluta); }
+
+.btn-odeber {
+    width: 100%;
+    padding: 5px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    letter-spacing: 0.5px;
+    background: #8B2020;
+    border-top:    2px solid #C04040;
+    border-left:   2px solid #C04040;
+    border-right:  2px solid #4A0000;
+    border-bottom: 2px solid #4A0000;
+    color: #FFB0B0;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-odeber:active {
+    border-top:    2px solid #4A0000;
+    border-left:   2px solid #4A0000;
+    border-right:  2px solid #C04040;
+    border-bottom: 2px solid #C04040;
+}
+
+.prazdny-detail {
+    font-size: 6px;
+    color: var(--text-svetly);
+    text-align: center;
+    padding: 8px 0;
+    line-height: 2;
+}
+
+/* =====================================================
+   SPODNÍ LIŠTA – váha a den
+===================================================== */
+.spodni-lista {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 5px 10px;
+    background: var(--drevo-tmave);
+    border-top: 3px solid var(--okraj-tmave);
+}
+
+.spodni-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 8px;
+    color: var(--okraj-svetle);
+}
+
+.spodni-item .ico { font-size: 12px; }
+
+/* váhový pruh ve spodní liště */
+.vaha-track {
+    width: 100px;
+    height: 10px;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+    overflow: hidden;
+}
+
+.vaha-pruh {
+    height: 100%;
+    background: var(--zelena);
+    transition: width 0.3s, background 0.3s;
+    image-rendering: pixelated;
+}
+
+.vaha-pruh.varovani  { background: var(--zluta); }
+.vaha-pruh.nebezpeci { background: var(--cervena); }
+
+/* =====================================================
+   CHYBOVÁ HLÁŠKA
+===================================================== */
+#chyba {
+    display: none;
+    font-size: 6px;
+    color: #FFB0B0;
+    background: #5C0000;
+    border-top:    2px solid #C04040;
+    border-left:   2px solid #C04040;
+    border-right:  2px solid #4A0000;
+    border-bottom: 2px solid #4A0000;
+    padding: 5px 8px;
+    margin: 4px 6px 0;
+    line-height: 2;
+}

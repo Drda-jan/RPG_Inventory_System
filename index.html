@@ -3,10 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>RPG Inventory Systém</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
     <script type="module" src="/dist/script.js"></script>
     
+    <div class="hlavni-okno">
+
+         <!-- titulní lišta -->
+        <div class="titul-lista">
+           <span>🎒 INVENTORY</span>
+    </div> 
+
+        <!-- chybová hláška -->
+        <div id="chyba"></div>
+
+        <div class="obsah">
+            <!-- LEVÝ PANEL – kategorie -->
+        <div class="levy-panel">
+            <button class="kategorie-btn aktivni" data-filtr="vse"    title="Vše">⚙️</button>
+            <button class="kategorie-btn"         data-filtr="zbran"  title="Zbraně">⚔️</button>
+            <button class="kategorie-btn"         data-filtr="brneni" title="Brnění">🛡️</button>
+            <button class="kategorie-btn"         data-filtr="lektvar"title="Lektvary">🧪</button>
+
+        </div>
+
+        <!-- STŘEDNÍ PANEL – obsah -->
+        <div class="stredni-panel">
+            
+            <!-- záložky -->
+             <div class="zalozky">
+                 <div class="zalozka aktivni" data-tab="inventar">INVENTÁŘ</div>
+                <div class="zalozka"         data-tab="nabidka">PŘIDAT</div>
+             </div>
+
+             <!-- INVENTÁŘ - mřížka slotů-->
+              <div class="mrizka-wrap" id="panel-inventar">
+                <div class="mrizka-nazev">ITEM NAME</div>
+                <div id="inventar-mrizka"></div>
+              </div>
+
+              <!-- nabídka - seznam předmětů k přidání -->
+              <div class="mrizka-wrap" id="panel-nabidka" style="display: none;">
+                <div class="mrizka-nazev">VYBRAT PŘEDMĚT</div>
+                <div id="nabidka-seznam"></div>
+              </div>
+
+              <!-- pravý panel - detail-->
+              <div class="pravy-panel">
+                <div class="detail-box" id="detail-box">
+                    <div class="prazdny-detail">Vyber<br>předmět</div>
+                </div>
+              </div>
+
+        </div>
+        <!-- spodní lišta -->
+        <div class="spodni-lista">
+            <div class="spodni-item">
+            <span class="ico">⚖️</span>
+            <span id="vaha-text">0/50 kg</span>
+            <div class="vaha-track">
+                <div class="vaha-pruh" id="vaha-pruh" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="spodni-item">
+                <span class="ico">📦</span>
+                <span id="stat-pocet">0</span> ITEMS
+            </div>
+        </div>  
+        
+        </div>
 </body>
 </html>
