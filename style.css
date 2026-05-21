@@ -92,11 +92,11 @@ body {
 ===================================================== */
 .obsah {
     display: grid;
-    grid-template-columns: 44px 1fr 180px;
+    grid-template-columns: 44px 1fr 320px;
     gap: 6px;
     padding: 6px;
+    align-items: stretch;
 }
-
 @media (max-width: 680px) {
     .obsah {
         grid-template-columns: 1fr;
@@ -320,6 +320,7 @@ body {
     border-right:  3px solid var(--okraj-tmave);
     border-bottom: 3px solid var(--okraj-tmave);
     padding: 7px;
+    word-break: break-word;
 }
 
 .detail-label {
@@ -448,3 +449,18 @@ body {
     margin: 4px 6px 0;
     line-height: 2;
 }
+.zalozka {
+    cursor: pointer;
+    user-select: none;
+}
+
+.kategorie-btn {
+    cursor: pointer;
+}
+
+.nabidka-nazev {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
