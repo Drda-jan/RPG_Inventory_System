@@ -54,6 +54,22 @@ const brneni = rawBrneni.map(d => new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, 
 const lektvary = rawLektvary.map(d => new lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
+function vykresliPostavu() {
+    const polozky = inventar.getPolozky();
+    const celkVaha = inventar.spoctiCelkouVahu();
+    // síla = součet combat power všech zbraní
+    const sila = polozky
+        .filter(p => p instanceof Zbran)
+        .reduce((sum, p) => sum + p.vypocitejEfektivitu(), 0);
+    // rychlost klesá s váhou – max 100, min 0
+    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 100));
+    // síla max 100 pro pruh
+    const silaProc = Math.min(100, Math.round(sila));
+    document.getElementById("val-str").textContent = `${Math.round(sila)}`;
+    document.getElementById("val-spd").textContent = `${rychlost}`;
+    document.getElementById("bar-str").style.width = `${silaProc}%`;
+    document.getElementById("bar-spd").style.width = `${rychlost}%`;
+}
 // stav UI
 let vybranId = null;
 let aktivniFiltr = "vse";
@@ -62,7 +78,7 @@ function getIkona(p) {
     if (p instanceof Zbran)
         return "⚔️";
     if (p instanceof Brneni)
-        return "🧥";
+        return "👘";
     if (p instanceof lektvar)
         return "🧪";
     return "📦";

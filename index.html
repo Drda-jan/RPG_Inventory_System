@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,74 +8,148 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
-    
+
     <div class="hlavni-okno">
 
-         <!-- titulní lišta -->
+        <!-- titulní lišta -->
         <div class="titul-lista">
-           <span>🎒 INVENTORY</span>
-    </div> 
+            <span>🎒 INVENTORY</span>
+        </div>
 
         <!-- chybová hláška -->
         <div id="chyba"></div>
 
+        <!-- hlavní grid: levy-panel | stredni-panel | pravy-panel | postava-panel -->
         <div class="obsah">
-            <!-- LEVÝ PANEL – kategorie -->
-        <div class="levy-panel">
-            <button class="kategorie-btn aktivni" data-filtr="vse"    title="Vše">⚙️</button>
-            <button class="kategorie-btn"         data-filtr="zbran"  title="Zbraně">⚔️</button>
-            <button class="kategorie-btn"         data-filtr="brneni" title="Brnění">👘</button>
-            <button class="kategorie-btn"         data-filtr="lektvar"title="Lektvary">🧪</button>
 
-        </div>
+            <!-- LEVÝ PANEL – tlačítka kategorií -->
+            <div class="levy-panel">
+                <button class="kategorie-btn aktivni" data-filtr="vse"     title="Vše">⚙️</button>
+                <button class="kategorie-btn"         data-filtr="zbran"   title="Zbraně">⚔️</button>
+                <button class="kategorie-btn"         data-filtr="brneni"  title="Brnění">👘</button>
+                <button class="kategorie-btn"         data-filtr="lektvar" title="Lektvary">🧪</button>
+            </div>
 
-        <!-- STŘEDNÍ PANEL – obsah -->
-        <div class="stredni-panel">
-            
-            <!-- záložky -->
-             <div class="zalozky">
-                 <div class="zalozka aktivni" data-tab="inventar">INVENTÁŘ</div>
-                <div class="zalozka"         data-tab="nabidka">PŘIDAT</div>
-             </div>
+            <!-- STŘEDNÍ PANEL – záložky + mřížka/nabídka -->
+            <div class="stredni-panel">
 
-             <!-- INVENTÁŘ - mřížka slotů-->
-              <div class="mrizka-wrap" id="panel-inventar">
-                <div class="mrizka-nazev">ITEM NAME</div>
-                </div> 
-                <div id="inventar-mrizka"></div>
-              </div>
+                <div class="zalozky">
+                    <div class="zalozka aktivni" data-tab="inventar">INVENTÁŘ</div>
+                    <div class="zalozka"         data-tab="nabidka">PŘIDAT</div>
+                </div>
 
-              <!-- nabídka - seznam předmětů k přidání -->
-              <div class="mrizka-wrap" id="panel-nabidka" style="display: none;">
-                <div class="mrizka-nazev">VYBRAT PŘEDMĚT</div>
-                <div id="nabidka-seznam"></div>
-              </div>
+                <div class="mrizka-wrap" id="panel-inventar">
+                    <div class="mrizka-nazev">ITEM NAME</div>
+                    <div id="inventar-mrizka"></div>
+                </div>
 
-              <!-- pravý panel - detail-->
-              <div class="pravy-panel">
+                <div class="mrizka-wrap" id="panel-nabidka" style="display: none;">
+                    <div class="mrizka-nazev">VYBRAT PŘEDMĚT</div>
+                    <div id="nabidka-seznam"></div>
+                </div>
+
+            </div>
+            <!-- konec stredni-panel -->
+
+            <!-- PRAVÝ PANEL – detail vybraného předmětu -->
+            <div class="pravy-panel">
                 <div class="detail-box" id="detail-box">
                     <div class="prazdny-detail">Vyber<br>předmět</div>
                 </div>
-              </div>
+            </div>
 
-        
-        <!-- spodní lišta -->
+            <!-- PANEL POSTAVY – musí být uvnitř .obsah aby byl ve gridu -->
+            <div class="postava-panel">
+                <div class="postava-box">
+                    <div class="postava-nazev">PLAYER</div>
+                    <div class="postava-avatar">
+                        <svg width="80" height="100" viewBox="0 0 12 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+                            <!-- vlasy -->
+                            <rect x="3" y="0" width="6" height="1" fill="#5C3D1E"/>
+                            <rect x="3" y="1" width="1" height="1" fill="#5C3D1E"/>
+                            <rect x="8" y="1" width="1" height="1" fill="#5C3D1E"/>
+                            <!-- hlava -->
+                            <rect x="3" y="1" width="6" height="5" fill="#C8A06A"/>
+                            <!-- oči -->
+                            <rect x="4" y="2" width="1" height="1" fill="#3D2B1F"/>
+                            <rect x="7" y="2" width="1" height="1" fill="#3D2B1F"/>
+                            <!-- ústa -->
+                            <rect x="5" y="4" width="2" height="1" fill="#8B4513"/>
+                            <!-- tělo -->
+                            <rect x="2" y="6" width="8" height="5" fill="#4A7A4A"/>
+                            <!-- límec -->
+                            <rect x="4" y="6" width="4" height="1" fill="#3D6B3D"/>
+                            <!-- ruce -->
+                            <rect x="0" y="6" width="2" height="4" fill="#C8A06A"/>
+                            <rect x="10" y="6" width="2" height="4" fill="#C8A06A"/>
+                            <!-- nohy -->
+                            <rect x="2" y="11" width="3" height="5" fill="#3D3D8B"/>
+                            <rect x="7" y="11" width="3" height="5" fill="#3D3D8B"/>
+                            <!-- boty -->
+                            <rect x="2" y="14" width="3" height="2" fill="#3D2B1F"/>
+                            <rect x="7" y="14" width="3" height="2" fill="#3D2B1F"/>
+                        </svg>
+                    </div>
+                    <div class="postava-stats">
+                        <div class="stat-radek">
+                            <span class="stat-ikona">❤️</span>
+                            <span class="stat-nazev">HP</span>
+                            <div class="stat-bar-wrap">
+                                <div class="stat-bar hp-bar" id="bar-hp" style="width:100%"></div>
+                            </div>
+                            <span class="stat-hodnota" id="val-hp">100</span>
+                        </div>
+                        <div class="stat-radek">
+                            <span class="stat-ikona">💧</span>
+                            <span class="stat-nazev">MP</span>
+                            <div class="stat-bar-wrap">
+                                <div class="stat-bar mp-bar" id="bar-mp" style="width:100%"></div>
+                            </div>
+                            <span class="stat-hodnota" id="val-mp">80</span>
+                        </div>
+                        <div class="stat-radek">
+                            <span class="stat-ikona">⚔️</span>
+                            <span class="stat-nazev">STR</span>
+                            <div class="stat-bar-wrap">
+                                <div class="stat-bar str-bar" id="bar-str" style="width:0%"></div>
+                            </div>
+                            <span class="stat-hodnota" id="val-str">0</span>
+                        </div>
+                        <div class="stat-radek">
+                            <span class="stat-ikona">💨</span>
+                            <span class="stat-nazev">SPD</span>
+                            <div class="stat-bar-wrap">
+                                <div class="stat-bar spd-bar" id="bar-spd" style="width:100%"></div>
+                            </div>
+                            <span class="stat-hodnota" id="val-spd">100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- konec postava-panel -->
+
+        </div>
+        <!-- konec obsah -->
+
+        <!-- SPODNÍ LIŠTA -->
         <div class="spodni-lista">
             <div class="spodni-item">
-            <span class="ico">⚖️</span>
-            <span id="vaha-text">0/50 kg</span>
-            <div class="vaha-track">
-                <div class="vaha-pruh" id="vaha-pruh" style="width:0%"></div>
+                <span class="ico">⚖️</span>
+                <span id="vaha-text">0/50 kg</span>
+                <div class="vaha-track">
+                    <div class="vaha-pruh" id="vaha-pruh" style="width:0%"></div>
+                </div>
             </div>
-        </div>
-        <div class="spodni-item">
+            <div class="spodni-item">
                 <span class="ico">📦</span>
                 <span id="stat-pocet">0</span> ITEMS
             </div>
-        </div>  
-        
         </div>
-        <script type="module" src="/dist/script.js"></script>
+
+    </div>
+    <!-- konec hlavni-okno -->
+
+    <script type="module" src="/dist/script.js"></script>
+
 </body>
 </html>
-```

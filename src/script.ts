@@ -72,6 +72,27 @@ const lektvary = rawLektvary.map(d =>
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
 
+function vykresliPostavu(): void {
+    const polozky  = inventar.getPolozky();
+    const celkVaha = inventar.spoctiCelkouVahu();
+
+    // síla = součet combat power všech zbraní
+    const sila = polozky
+        .filter(p => p instanceof Zbran)
+        .reduce((sum, p) => sum + p.vypocitejEfektivitu(), 0);
+
+    // rychlost klesá s váhou – max 100, min 0
+    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 100));
+
+    // síla max 100 pro pruh
+    const silaProc = Math.min(100, Math.round(sila));
+
+    (document.getElementById("val-str") as HTMLElement).textContent = `${Math.round(sila)}`;
+    (document.getElementById("val-spd") as HTMLElement).textContent = `${rychlost}`;
+    (document.getElementById("bar-str") as HTMLElement).style.width = `${silaProc}%`;
+    (document.getElementById("bar-spd") as HTMLElement).style.width = `${rychlost}%`;
+}
+
 // stav UI
 let vybranId: string | null = null;
 let aktivniFiltr = "vse";
