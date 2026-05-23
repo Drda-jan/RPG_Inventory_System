@@ -4,8 +4,8 @@
 
 import { Polozka } from "./polozka.js";
 
-// lektvar dědí z Polozka a přidává efekt a typ. 
-export class lektvar extends Polozka {
+// Lektvar dědí z Polozka a přidává efekt a typ. 
+export class Lektvar extends Polozka {
     private readonly efekt: string;
     private readonly typ: string;
 

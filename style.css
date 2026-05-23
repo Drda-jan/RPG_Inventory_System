@@ -21,8 +21,8 @@
 
 body {
     background: var(--pozadi);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    font-family: 'Cousine', monospace;
+    font-size: 13px;
     color: var(--text);
     min-height: 100vh;
     display: flex;
@@ -194,8 +194,8 @@ body {
 
 #inventar-mrizka {
     display: grid;
-    grid-template-columns: repeat(10, 58px);
-    gap: 4px;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
 }
 
 @media (max-width: 680px) {
@@ -203,7 +203,7 @@ body {
 }
 
 .slot {
-    width: 58px;
+    width: 100%;
     height: 58px;
     background: var(--drevo-stredni);
     border-top:    2px solid var(--okraj-tmave);
@@ -276,14 +276,11 @@ body {
 
 .nabidka-nazev {
     flex: 1;
-    font-size: 8px;
+    font-size: 13px;
     color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.nabidka-vaha { font-size: 7px; color: var(--text-svetly); }
+.nabidka-vaha { font-size: 10px; color: var(--text-svetly); }
 
 .btn-plus {
     width: 26px;

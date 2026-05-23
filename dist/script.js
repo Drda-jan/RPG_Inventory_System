@@ -3,8 +3,9 @@
 // Importujeme třídy a data ze všech ostatních souborů.
 import { Zbran } from "./weapon.js";
 import { Brneni } from "./armor.js";
-import { lektvar } from "./potion.js";
-import { rawZbrane, rawBrneni, rawLektvary } from "./data.js";
+import { Lektvar } from "./potion.js";
+import { Svitek } from "./scroll.js";
+import { rawZbrane, rawBrneni, rawLektvary, rawSvitky } from "./data.js";
 // Inventar drží seznam všech předmětů a hlídá, aby postava nebyla přetížená.
 // Pole "polozky" může obsahovat Zbran, Brneni i Lektvar najednou –
 // všechny mají společný typ Polozka, takže je lze ukládat dohromady.
@@ -51,23 +52,41 @@ class Inventar {
 // Oživení dat – z číselníku (plain objekty) vytvoříme instance tříd.
 const zbrane = rawZbrane.map(d => new Zbran(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, 0, d.multiplikatorRarity, d.typ, d.poskozeni, d.rychlost));
 const brneni = rawBrneni.map(d => new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.obrana, d.rychlost, d.typ));
-const lektvary = rawLektvary.map(d => new lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
+const lektvary = rawLektvary.map(d => new Lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
+const svitky = rawSvitky.map(d => new Svitek(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
 function vykresliPostavu() {
     const polozky = inventar.getPolozky();
     const celkVaha = inventar.spoctiCelkouVahu();
-    // síla = součet combat power všech zbraní
+    // HP – roste s brnění (každý bod obrany = +2 HP, max 200)
+    const bonusHP = polozky
+        .filter(p => p instanceof Brneni)
+        .reduce((sum, p) => sum + p.getObrana() * 2, 0);
+    const hp = Math.min(200, 100 + bonusHP);
+    // MP – roste s lektvary a svitky (každý = +5 MP, max 200)
+    const bonusMP = polozky
+        .filter(p => p instanceof Lektvar || p instanceof Svitek)
+        .length * 5;
+    const mp = Math.min(200, 80 + bonusMP);
+    // STR – roste s combat power zbraní (max 999)
     const sila = polozky
         .filter(p => p instanceof Zbran)
         .reduce((sum, p) => sum + p.vypocitejEfektivitu(), 0);
-    // rychlost klesá s váhou – max 100, min 0
-    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 100));
-    // síla max 100 pro pruh
-    const silaProc = Math.min(100, Math.round(sila));
+    // SPD – klesá s váhou, brnění navíc ubírá (min 0, max 100)
+    const penalizaceBrneni = polozky
+        .filter(p => p instanceof Brneni)
+        .reduce((sum, p) => sum + Math.abs(p.getRychlost()), 0);
+    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 60 - penalizaceBrneni));
+    // aktualizace hodnot
+    document.getElementById("val-hp").textContent = `${Math.round(hp)}`;
+    document.getElementById("val-mp").textContent = `${Math.round(mp)}`;
     document.getElementById("val-str").textContent = `${Math.round(sila)}`;
     document.getElementById("val-spd").textContent = `${rychlost}`;
-    document.getElementById("bar-str").style.width = `${silaProc}%`;
+    // aktualizace pruhů
+    document.getElementById("bar-hp").style.width = `${(hp / 200) * 100}%`;
+    document.getElementById("bar-mp").style.width = `${(mp / 200) * 100}%`;
+    document.getElementById("bar-str").style.width = `${Math.min(100, (sila / 100) * 100)}%`;
     document.getElementById("bar-spd").style.width = `${rychlost}%`;
 }
 // stav UI
@@ -79,7 +98,7 @@ function getIkona(p) {
         return "⚔️";
     if (p instanceof Brneni)
         return "👘";
-    if (p instanceof lektvar)
+    if (p instanceof Lektvar)
         return "🧪";
     return "📦";
 }
@@ -88,7 +107,7 @@ function getTypClass(p) {
         return "typ-zbran";
     if (p instanceof Brneni)
         return "typ-brneni";
-    if (p instanceof lektvar)
+    if (p instanceof Lektvar)
         return "typ-lektvar";
     return "";
 }
@@ -151,7 +170,7 @@ function vykresliDetail() {
                      <div class="detail-label">RYCHLOST</div>
                      <div class="detail-hodnota">${p.getRychlost()}</div>`;
     }
-    else if (p instanceof lektvar) {
+    else if (p instanceof Lektvar) {
         extraInfo = `<div class="detail-label">EFEKT</div>
                      <div class="detail-hodnota">${p.getEfekt()}</div>`;
     }
@@ -176,12 +195,13 @@ function vykresliDetail() {
         vykresliInventar();
         vykresliNabidku();
         vykresliDetail();
+        vykresliPostavu;
     });
 }
 function vykresliNabidku() {
     const seznam = document.getElementById("nabidka-seznam");
     seznam.innerHTML = "";
-    const vsechny = [...zbrane, ...brneni, ...lektvary];
+    const vsechny = [...zbrane, ...brneni, ...lektvary, ...svitky];
     const vInventari = inventar.getPolozky().map(p => p.getId());
     const filtrovane = vsechny.filter(p => {
         if (aktivniFiltr === "vse")
@@ -191,7 +211,9 @@ function vykresliNabidku() {
         if (aktivniFiltr === "brneni")
             return p instanceof Brneni;
         if (aktivniFiltr === "lektvar")
-            return p instanceof lektvar;
+            return p instanceof Lektvar;
+        if (aktivniFiltr === "svitek")
+            return p instanceof Svitek;
         return true;
     });
     filtrovane.forEach(p => {
@@ -208,6 +230,7 @@ function vykresliNabidku() {
             radek.querySelector(".btn-plus").addEventListener("click", () => {
                 try {
                     inventar.pridejPolozku(p);
+                    vykresliPostavu();
                     vykresliInventar();
                     vykresliNabidku();
                 }
@@ -259,3 +282,4 @@ vsechnyPredmety.forEach(p => {
 console.log("zalozky:", document.querySelectorAll(".zalozka").length);
 console.log("kategorie:", document.querySelectorAll(".kategorie-btn").length);
 console.log("panel-nabidka:", document.getElementById("panel-nabidka"));
+vykresliPostavu;

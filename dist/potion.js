@@ -2,8 +2,8 @@
 // Třída Elixir – potomek Polozka.
 // "import" načte třídu Polozka z jiného souboru, abychom z ní mohli dědit.
 import { Polozka } from "./polozka.js";
-// lektvar dědí z Polozka a přidává efekt a typ. 
-export class lektvar extends Polozka {
+// Lektvar dědí z Polozka a přidává efekt a typ. 
+export class Lektvar extends Polozka {
     constructor(id, nazev, vaha, popis, zakladniCena, rarity, multiplikatorRarity, trvaniEfektu, efekt, typ) {
         super(id, nazev, vaha, popis, zakladniCena, rarity, trvaniEfektu, multiplikatorRarity);
         if (!efekt || efekt.trim() === "")

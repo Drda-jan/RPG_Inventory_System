@@ -5,8 +5,9 @@
 import { Polozka } from "./polozka.js";
 import { Zbran } from "./weapon.js";
 import { Brneni } from "./armor.js";
-import { lektvar } from "./potion.js";
-import { rawZbrane, rawBrneni, rawLektvary } from "./data.js";
+import { Lektvar} from "./potion.js";
+import { Svitek } from "./scroll.js";
+import { rawZbrane, rawBrneni, rawLektvary, rawSvitky } from "./data.js";
 
 // Inventar drží seznam všech předmětů a hlídá, aby postava nebyla přetížená.
 // Pole "polozky" může obsahovat Zbran, Brneni i Lektvar najednou –
@@ -66,7 +67,10 @@ const brneni = rawBrneni.map(d =>
     new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.obrana, d.rychlost, d.typ)
 );
 const lektvary = rawLektvary.map(d =>
-    new lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ)
+    new Lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ)
+);
+const svitky = rawSvitky.map(d =>
+    new Svitek(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ)
 );
 
 // Vytvoříme inventář a naplníme ho.
@@ -76,22 +80,42 @@ function vykresliPostavu(): void {
     const polozky  = inventar.getPolozky();
     const celkVaha = inventar.spoctiCelkouVahu();
 
-    // síla = součet combat power všech zbraní
+    // HP – roste s brnění (každý bod obrany = +2 HP, max 200)
+    const bonusHP = polozky
+        .filter(p => p instanceof Brneni)
+        .reduce((sum, p) => sum + (p as Brneni).getObrana() * 2, 0);
+    const hp = Math.min(200, 100 + bonusHP);
+
+    // MP – roste s lektvary a svitky (každý = +5 MP, max 200)
+    const bonusMP = polozky
+        .filter(p => p instanceof Lektvar || p instanceof Svitek)
+        .length * 5;
+    const mp = Math.min(200, 80 + bonusMP);
+
+    // STR – roste s combat power zbraní (max 999)
     const sila = polozky
         .filter(p => p instanceof Zbran)
         .reduce((sum, p) => sum + p.vypocitejEfektivitu(), 0);
 
-    // rychlost klesá s váhou – max 100, min 0
-    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 100));
+    // SPD – klesá s váhou, brnění navíc ubírá (min 0, max 100)
+    const penalizaceBrneni = polozky
+        .filter(p => p instanceof Brneni)
+        .reduce((sum, p) => sum + Math.abs((p as Brneni).getRychlost()), 0);
+    const rychlost = Math.max(0, Math.round(100 - (celkVaha / inventar.getMaxKapacita()) * 60 - penalizaceBrneni));
 
-    // síla max 100 pro pruh
-    const silaProc = Math.min(100, Math.round(sila));
-
+    // aktualizace hodnot
+    (document.getElementById("val-hp")  as HTMLElement).textContent = `${Math.round(hp)}`;
+    (document.getElementById("val-mp")  as HTMLElement).textContent = `${Math.round(mp)}`;
     (document.getElementById("val-str") as HTMLElement).textContent = `${Math.round(sila)}`;
     (document.getElementById("val-spd") as HTMLElement).textContent = `${rychlost}`;
-    (document.getElementById("bar-str") as HTMLElement).style.width = `${silaProc}%`;
+
+    // aktualizace pruhů
+    (document.getElementById("bar-hp")  as HTMLElement).style.width = `${(hp / 200) * 100}%`;
+    (document.getElementById("bar-mp")  as HTMLElement).style.width = `${(mp / 200) * 100}%`;
+    (document.getElementById("bar-str") as HTMLElement).style.width = `${Math.min(100, (sila / 100) * 100)}%`;
     (document.getElementById("bar-spd") as HTMLElement).style.width = `${rychlost}%`;
 }
+
 
 // stav UI
 let vybranId: string | null = null;
@@ -101,14 +125,14 @@ const MAX_SLOTU = 20;
 function getIkona(p: Polozka): string {
     if (p instanceof Zbran)   return "⚔️";
     if (p instanceof Brneni) return "👘";
-    if (p instanceof lektvar) return "🧪";
+    if (p instanceof Lektvar) return "🧪";
     return "📦";
 }
 
 function getTypClass(p: Polozka): string {
     if (p instanceof Zbran)   return "typ-zbran";
     if (p instanceof Brneni)  return "typ-brneni";
-    if (p instanceof lektvar) return "typ-lektvar";
+    if (p instanceof Lektvar) return "typ-lektvar";
     return "";
 }
 
@@ -178,7 +202,7 @@ function vykresliDetail(): void {
                      <div class="detail-hodnota">${p.getObrana()}</div>
                      <div class="detail-label">RYCHLOST</div>
                      <div class="detail-hodnota">${p.getRychlost()}</div>`;
-    } else if (p instanceof lektvar) {
+    } else if (p instanceof Lektvar) {
         extraInfo = `<div class="detail-label">EFEKT</div>
                      <div class="detail-hodnota">${p.getEfekt()}</div>`;
     }
@@ -205,6 +229,7 @@ function vykresliDetail(): void {
         vykresliInventar();
         vykresliNabidku();
         vykresliDetail();
+        vykresliPostavu
     });
 }
 
@@ -212,14 +237,15 @@ function vykresliNabidku(): void {
     const seznam     = document.getElementById("nabidka-seznam") as HTMLElement;
     seznam.innerHTML = "";
 
-    const vsechny: Polozka[] = [...zbrane, ...brneni, ...lektvary];
+    const vsechny: Polozka[] = [...zbrane, ...brneni, ...lektvary, ...svitky];
     const vInventari = inventar.getPolozky().map(p => p.getId());
 
     const filtrovane = vsechny.filter(p => {
         if (aktivniFiltr === "vse")     return true;
         if (aktivniFiltr === "zbran")   return p instanceof Zbran;
         if (aktivniFiltr === "brneni")  return p instanceof Brneni;
-        if (aktivniFiltr === "lektvar") return p instanceof lektvar;
+        if (aktivniFiltr === "lektvar") return p instanceof Lektvar;
+        if (aktivniFiltr === "svitek") return p instanceof Svitek;
         return true;
     });
 
@@ -238,6 +264,7 @@ function vykresliNabidku(): void {
             radek.querySelector(".btn-plus")!.addEventListener("click", () => {
                 try {
                     inventar.pridejPolozku(p);
+                    vykresliPostavu();
                     vykresliInventar();
                     vykresliNabidku();
                 } catch (err) {
@@ -297,3 +324,5 @@ vsechnyPredmety.forEach(p => {
 console.log("zalozky:", document.querySelectorAll(".zalozka").length);
 console.log("kategorie:", document.querySelectorAll(".kategorie-btn").length);
 console.log("panel-nabidka:", document.getElementById("panel-nabidka"));
+
+vykresliPostavu
