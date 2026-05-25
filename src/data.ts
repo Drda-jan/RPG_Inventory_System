@@ -50,6 +50,15 @@ interface RawSvitek {
     vaha: number;
 }
 
+interface CraftingRecept {
+    id: string;
+    ingredience1: string;
+    ingredience2: string;
+    vysledekId: string;
+    nazev: string;
+    popis: string;
+}
+
 export const rawZbrane: RawZbran[] = [
     { id: "zbr001", nazev: "Meč",            popis: "Ostrý meč pro boj na blízko.",                 typ: "meč",    poskozeni: 10, rychlost: 5, multiplikatorRarity: 1.0, rarity: "běžná",      vaha: 2.5 },
     { id: "zbr002", nazev: "Dýka",           popis: "Malá a rychlá zbraň pro tiché útoky.",          typ: "dýka",   poskozeni: 5,  rychlost: 8, multiplikatorRarity: 1.0, rarity: "běžná",      vaha: 0.5 },
@@ -91,4 +100,29 @@ export const rawSvitky: RawSvitek[] = [
     { id: "svi003", nazev: "Svitek léčení",      popis: "Okamžitě obnoví zdraví celé skupiny.",         typ: "svitek", efekt: "skupinové léčení", trvaniEfektu: 0,  multiplikatorRarity: 1.8, rarity: "vzácná",    vaha: 0.2 },
     { id: "svi004", nazev: "Svitek ochrany",     popis: "Vytvoří magický štít kolem postavy.",          typ: "svitek", efekt: "magický štít",     trvaniEfektu: 30, multiplikatorRarity: 1.6, rarity: "neobvyklá", vaha: 0.2 },
     { id: "svi005", nazev: "Svitek teleportace", popis: "Okamžitě přemístí postavu na bezpečné místo.", typ: "svitek", efekt: "teleportace",      trvaniEfektu: 0,  multiplikatorRarity: 2.5, rarity: "vzácná",    vaha: 0.2 },
+];
+export const craftingRecepty: CraftingRecept[] = [
+    { id: "rec001", ingredience1: "zbr001", ingredience2: "svi001", vysledekId: "zbr_ohnivy",   nazev: "Ohnivý meč",      popis: "Meč + Svitek ohně" },
+    { id: "rec002", ingredience1: "zbr002", ingredience2: "lek005", vysledekId: "zbr_otravena", nazev: "Otrávená dýka",   popis: "Dýka + Lektvar jedu" },
+    { id: "rec003", ingredience1: "brn001", ingredience2: "brn008", vysledekId: "brn_elfi",     nazev: "Elfská zbroj",    popis: "Kožená zbroj + Elfský plášť" },
+    { id: "rec004", ingredience1: "lek001", ingredience2: "lek003", vysledekId: "lek_vitalita", nazev: "Elixír vitality", popis: "Lektvar zdraví + Lektvar síly" },
+    { id: "rec005", ingredience1: "zbr003", ingredience2: "brn002", vysledekId: "zbr_valecne",  nazev: "Válečné kladivo", popis: "Kladivo + Kovová zbroj" },
+    { id: "rec006", ingredience1: "svi002", ingredience2: "zbr007", vysledekId: "zbr_bleskove", nazev: "Bleskové žezlo",  popis: "Svitek blesku + Hůl mága" },
+    { id: "rec007", ingredience1: "lek006", ingredience2: "brn008", vysledekId: "brn_stinu",    nazev: "Plášť stínů",     popis: "Lektvar neviditelnosti + Elfský plášť" },
+];
+
+export const rawZbraneCraft = [
+    { id: "zbr_ohnivy",   nazev: "Ohnivý meč",      popis: "Meč prosycený ohněm.",            typ: "meč",     poskozeni: 22, rychlost: 5, multiplikatorRarity: 2.0, rarity: "vzácná",    vaha: 2.5 },
+    { id: "zbr_otravena", nazev: "Otrávená dýka",    popis: "Dýka namočená v jedu.",            typ: "dýka",    poskozeni: 14, rychlost: 9, multiplikatorRarity: 1.8, rarity: "neobvyklá", vaha: 0.5 },
+    { id: "zbr_valecne",  nazev: "Válečné kladivo",  popis: "Kladivo opatřené kovovými hroty.", typ: "kladivo", poskozeni: 28, rychlost: 3, multiplikatorRarity: 1.8, rarity: "neobvyklá", vaha: 6.0 },
+    { id: "zbr_bleskove", nazev: "Bleskové žezlo",   popis: "Žezlo kanalizující blesky.",       typ: "hůl",     poskozeni: 30, rychlost: 6, multiplikatorRarity: 2.5, rarity: "vzácná",    vaha: 1.5 },
+];
+
+export const rawBrneniCraft = [
+    { id: "brn_elfi",  nazev: "Elfská zbroj", popis: "Lehká zbroj s elfskou magií.", typ: "kožená zbroj", obrana: 12, rychlost: 2, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 3.0 },
+    { id: "brn_stinu", nazev: "Plášť stínů",  popis: "Plášť splývající s tmou.",     typ: "plášť",        obrana: 10, rychlost: 5, multiplikatorRarity: 2.5, rarity: "vzácná", vaha: 0.8 },
+];
+
+export const rawLektvaryCraft = [
+    { id: "lek_vitalita", nazev: "Elixír vitality", popis: "Obnovuje zdraví i sílu najednou.", typ: "elixír", efekt: "obnova zdraví + síla", trvaniEfektu: 90, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 0.5 },
 ];

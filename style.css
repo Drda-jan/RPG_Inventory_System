@@ -537,3 +537,79 @@ body {
     width: 26px;
     text-align: right;
 }
+
+/* =====================================================
+   CRAFTING
+===================================================== */
+.crafting-radek {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--drevo-stredni);
+    opacity: 0.6;
+    flex-wrap: wrap;
+}
+
+.crafting-radek.crafting-mozno {
+    opacity: 1;
+    background: rgba(92, 184, 92, 0.08);
+}
+
+.crafting-radek.crafting-hotovo {
+    opacity: 0.4;
+}
+
+.crafting-ingredience {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    flex: 1;
+    min-width: 0;
+}
+
+.craft-ma   { color: var(--zelena); }
+.craft-nema { color: var(--cervena); text-decoration: line-through; }
+.craft-plus { color: var(--text-svetly); font-weight: bold; }
+
+.crafting-sipka {
+    color: var(--zluta);
+    font-size: 12px;
+}
+
+.crafting-vysledek {
+    font-size: 11px;
+    flex: 1;
+    min-width: 0;
+}
+
+.craft-rarity {
+    color: var(--text-svetly);
+    font-size: 10px;
+}
+
+.btn-craft {
+    background: var(--drevo-tmave);
+    border-top:    2px solid var(--okraj-svetle);
+    border-left:   2px solid var(--okraj-svetle);
+    border-right:  2px solid var(--okraj-tmave);
+    border-bottom: 2px solid var(--okraj-tmave);
+    color: var(--okraj-svetle);
+    font-family: 'Cousine', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.btn-craft:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-craft:not(:disabled):hover {
+    background: var(--zelena);
+    color: #fff;
+}

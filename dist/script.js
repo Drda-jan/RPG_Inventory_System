@@ -5,7 +5,7 @@ import { Zbran } from "./weapon.js";
 import { Brneni } from "./armor.js";
 import { Lektvar } from "./potion.js";
 import { Svitek } from "./scroll.js";
-import { rawZbrane, rawBrneni, rawLektvary, rawSvitky } from "./data.js";
+import { rawZbrane, rawBrneni, rawLektvary, rawSvitky, craftingRecepty, rawZbraneCraft, rawBrneniCraft, rawLektvaryCraft } from "./data.js";
 // Inventar drží seznam všech předmětů a hlídá, aby postava nebyla přetížená.
 // Pole "polozky" může obsahovat Zbran, Brneni i Lektvar najednou –
 // všechny mají společný typ Polozka, takže je lze ukládat dohromady.
@@ -54,6 +54,14 @@ const zbrane = rawZbrane.map(d => new Zbran(d.id, d.nazev, d.vaha, d.popis, 0, d
 const brneni = rawBrneni.map(d => new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.obrana, d.rychlost, d.typ));
 const lektvary = rawLektvary.map(d => new Lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
 const svitky = rawSvitky.map(d => new Svitek(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
+// Craftitelné předměty
+const zbraneCraft = rawZbraneCraft.map(d => new Zbran(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, 0, d.multiplikatorRarity, d.typ, d.poskozeni, d.rychlost));
+const brneniCraft = rawBrneniCraft.map(d => new Brneni(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.obrana, d.rychlost, d.typ));
+const lektvaryCraft = rawLektvaryCraft.map(d => new Lektvar(d.id, d.nazev, d.vaha, d.popis, 0, d.rarity, d.multiplikatorRarity, d.trvaniEfektu, d.efekt, d.typ));
+// Mapa všech předmětů pro rychlé vyhledávání výsledku receptu
+const vsechnyPredmetyMapa = new Map();
+[...zbrane, ...brneni, ...lektvary, ...svitky, ...zbraneCraft, ...brneniCraft, ...lektvaryCraft]
+    .forEach(p => vsechnyPredmetyMapa.set(p.getId(), p));
 // Vytvoříme inventář a naplníme ho.
 const inventar = new Inventar(50);
 function vykresliPostavu() {
@@ -246,16 +254,78 @@ function prepniTab(tab) {
     var _a;
     const panelInv = document.getElementById("panel-inventar");
     const panelNab = document.getElementById("panel-nabidka");
+    const panelCraft = document.getElementById("panel-crafting");
     document.querySelectorAll(".zalozka").forEach(z => z.classList.remove("aktivni"));
     (_a = document.querySelector(`[data-tab="${tab}"]`)) === null || _a === void 0 ? void 0 : _a.classList.add("aktivni");
+    panelInv.style.display = "none";
+    panelNab.style.display = "none";
+    panelCraft.style.display = "none";
     if (tab === "inventar") {
         panelInv.style.display = "";
-        panelNab.style.display = "none";
     }
-    else {
-        panelInv.style.display = "none";
+    else if (tab === "nabidka") {
         panelNab.style.display = "";
         vykresliNabidku();
+    }
+    else if (tab === "crafting") {
+        panelCraft.style.display = "";
+        vykresliCrafting();
+    }
+}
+function vykresliCrafting() {
+    const obsah = document.getElementById("crafting-obsah");
+    obsah.innerHTML = "";
+    const vInventari = inventar.getPolozky();
+    const vInventariIds = vInventari.map(p => p.getId());
+    craftingRecepty.forEach(recept => {
+        const maIngr1 = vInventariIds.includes(recept.ingredience1);
+        const maIngr2 = vInventariIds.includes(recept.ingredience2);
+        const jizVyroben = vInventariIds.includes(recept.vysledekId);
+        const mozno = maIngr1 && maIngr2 && !jizVyroben;
+        const ingr1 = vsechnyPredmetyMapa.get(recept.ingredience1);
+        const ingr2 = vsechnyPredmetyMapa.get(recept.ingredience2);
+        const vysledek = vsechnyPredmetyMapa.get(recept.vysledekId);
+        if (!ingr1 || !ingr2 || !vysledek)
+            return;
+        const radek = document.createElement("div");
+        radek.className = `crafting-radek ${mozno ? "crafting-mozno" : ""} ${jizVyroben ? "crafting-hotovo" : ""}`;
+        radek.innerHTML = `
+            <div class="crafting-ingredience">
+                <span class="${maIngr1 ? "craft-ma" : "craft-nema"}">${getIkona(ingr1)} ${ingr1.getNazev()}</span>
+                <span class="craft-plus">+</span>
+                <span class="${maIngr2 ? "craft-ma" : "craft-nema"}">${getIkona(ingr2)} ${ingr2.getNazev()}</span>
+            </div>
+            <div class="crafting-sipka">▶</div>
+            <div class="crafting-vysledek">
+                ${getIkona(vysledek)} <strong>${vysledek.getNazev()}</strong>
+                <span class="craft-rarity">[${vysledek.getRarity()}]</span>
+            </div>
+            <button class="btn-craft" data-id="${recept.id}" ${!mozno ? "disabled" : ""}>
+                ${jizVyroben ? "✓ HOTOVO" : mozno ? "CRAFT" : "CHYBÍ"}
+            </button>
+        `;
+        if (mozno) {
+            radek.querySelector(".btn-craft").addEventListener("click", () => {
+                try {
+                    // Odeber ingredience
+                    inventar.odeberPolozku(recept.ingredience1);
+                    inventar.odeberPolozku(recept.ingredience2);
+                    // Přidej výsledek
+                    inventar.pridejPolozku(vysledek);
+                    vykresliPostavu();
+                    vykresliInventar();
+                    vykresliCrafting();
+                    zobrazChybu(`✨ Vytvořeno: ${vysledek.getNazev()}!`);
+                }
+                catch (err) {
+                    zobrazChybu(err.message);
+                }
+            });
+        }
+        obsah.appendChild(radek);
+    });
+    if (obsah.innerHTML === "") {
+        obsah.innerHTML = `<div class="prazdny-detail" style="padding:16px">Žádné recepty k zobrazení.</div>`;
     }
 }
 document.querySelectorAll(".zalozka").forEach(z => {
