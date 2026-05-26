@@ -527,6 +527,13 @@ body {
 .stat-bar { height: 100%; transition: width 0.4s; }
 
 .hp-bar  { background: #E74C3C; }
+.hp-bar.low  { background: #E67E22; }
+.hp-bar.critical { background: #E74C3C; animation: blik 0.5s infinite; }
+
+@keyframes blik {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
 .mp-bar  { background: #3498DB; }
 .str-bar { background: #E67E22; }
 .spd-bar { background: #2ECC71; }
@@ -612,4 +619,52 @@ body {
 .btn-craft:not(:disabled):hover {
     background: var(--zelena);
     color: #fff;
+}
+.cena-text {
+    font-size: 11px;
+    color: var(--zluta);
+    min-width: 55px;
+    text-align: right;
+}
+
+.btn-prodat {
+    background: rgba(201,168,76,0.15);
+    color: var(--zluta);
+    border-color: var(--zluta-tmava, #7a5c1e);
+    font-size: 9px;
+    width: auto;
+    padding: 0 8px;
+}
+
+.btn-pruzkum {
+    font-family: 'Cousine', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    background: rgba(39,174,96,0.2);
+    border-top:    2px solid #5CB85C;
+    border-left:   2px solid #5CB85C;
+    border-right:  2px solid #1a5c1a;
+    border-bottom: 2px solid #1a5c1a;
+    color: #5CB85C;
+    cursor: pointer;
+}
+
+.btn-pruzkum:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.btn-pouzit {
+    width: 100%;
+    padding: 7px;
+    font-family: 'Cousine', monospace;
+    font-size: 10px;
+    background: rgba(52,152,219,0.2);
+    border-top:    2px solid #3498DB;
+    border-left:   2px solid #3498DB;
+    border-right:  2px solid #1a5c8a;
+    border-bottom: 2px solid #1a5c8a;
+    color: #5dade2;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 6px;
 }
