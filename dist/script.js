@@ -82,6 +82,10 @@ const inventar = new Inventar(50);
 // ============================================================
 let zlato = 100; // Počáteční zlaté mince hráče
 let aktualniHp = 100; // Aktuální životy hráče (mění se průzkumem a lektvary)
+let herniDen = 1;
+function vykresliDen() {
+    document.getElementById("den-text").textContent = `${herniDen}`;
+}
 // Vrátí cenu předmětu podle jeho rarity (vzácnější = dražší)
 function getCena(p) {
     switch (p.getRarity()) {
@@ -119,6 +123,8 @@ function restartHry() {
     vykresliDetail();
     vykresliPostavu();
     vykresliZlato();
+    herniDen = 1;
+    vykresliDen();
 }
 // ============================================================
 // PRŮZKUM – tlačítko které hráči vydělává zlaté mince
@@ -181,6 +187,8 @@ function pruzkum() {
             btn.textContent = "⚔ PRŮZKUM";
         }
     }, 1000); // Každou sekundu
+    herniDen++;
+    vykresliDen();
 }
 // ============================================================
 // STATY POSTAVY – počítá a zobrazuje HP, STR, SPD
@@ -576,6 +584,7 @@ vykresliInventar(); // Zobraz prázdný inventář
 vykresliDetail(); // Zobraz prázdný detail
 vykresliPostavu(); // Spočítej a zobraz staty
 vykresliZlato(); // Zobraz počáteční zlaté
+vykresliDen(); // Zobraz herní den
 // Konzolový výpis všech předmětů s jejich efektivitou (pro ladění/školní účely)
 const vsechnyPredmety = [...zbrane, ...brneni, ...lektvary];
 vsechnyPredmety.forEach(p => {

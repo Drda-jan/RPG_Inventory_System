@@ -27,8 +27,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 40px 16px;
+    align-items: stretch;
+    padding: 8px;
     image-rendering: pixelated;
     background-image:
         repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.08) 31px, rgba(0,0,0,0.08) 32px),
@@ -60,7 +60,8 @@ body {
 ===================================================== */
 .hlavni-okno {
     width: 100%;
-    max-width: 1400px;
+    max-width: 80%;
+    min-height: 50vh;
     background: var(--drevo-tmave);
     border-top:    4px solid #C4895A;
     border-left:   4px solid #C4895A;
@@ -71,7 +72,6 @@ body {
     flex-direction: column;
 }
 
-/* titulní lišta */
 .titul-lista {
     background: var(--drevo-tmave);
     border-bottom: 3px solid var(--okraj-tmave);
@@ -89,7 +89,7 @@ body {
 }
 
 /* =====================================================
-   ROZLOŽENÍ OBSAHU
+   ROZLOŽENÍ – desktop: 4 sloupce
 ===================================================== */
 .obsah {
     display: grid;
@@ -98,11 +98,66 @@ body {
     padding: 8px;
     flex: 1;
     align-items: start;
+    min-height: 60px;
 }
 
-@media (max-width: 680px) {
-    .obsah { grid-template-columns: 1fr; }
-    .levy-panel { flex-direction: row; }
+/* =====================================================
+   MOBIL – vše pod sebou
+===================================================== */
+@media (max-width: 768px) {
+    body { padding: 8px; }
+
+    .obsah {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 6px;
+    }
+
+    /* levý panel – tlačítka kategorií jdou do řádku */
+    .levy-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .kategorie-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* pravý panel a panel postavy se zobrazí pod středním panelem */
+    .pravy-panel,
+    .postava-panel {
+        width: 100%;
+    }
+
+    /* mřížka slotů – 5 sloupců na mobilu */
+    #inventar-mrizka {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .slot { height: 50px; font-size: 18px; }
+
+    /* záložky – menší font */
+    .zalozka { padding: 5px 8px; font-size: 8px; }
+
+    /* spodní lišta – zalomí se */
+    .spodni-lista {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 6px 8px;
+    }
+
+    .vaha-track { width: 80px; }
+
+    /* nabídka – neomezená výška na mobilu */
+    #nabidka-seznam { max-height: none; }
+
+    /* detail box – plná šířka */
+    .detail-box { width: 100%; }
+
+    /* crafting – zalomení ingrediencí */
+    .crafting-radek { flex-direction: column; align-items: flex-start; }
 }
 
 /* =====================================================
@@ -153,6 +208,7 @@ body {
 .zalozky {
     display: flex;
     gap: 4px;
+    flex-wrap: wrap;
 }
 
 .zalozka {
@@ -196,10 +252,6 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 3px;
-}
-
-@media (max-width: 680px) {
-    #inventar-mrizka { grid-template-columns: repeat(5, 58px); }
 }
 
 .slot {
@@ -285,7 +337,7 @@ body {
 .btn-plus {
     width: 26px;
     height: 26px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'Cousine', monospace;
     font-size: 12px;
     display: flex;
     align-items: center;
@@ -367,7 +419,7 @@ body {
 .btn-odeber {
     width: 100%;
     padding: 7px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'Cousine', monospace;
     font-size: 8px;
     letter-spacing: 0.5px;
     background: #8B2020;
@@ -405,6 +457,7 @@ body {
     padding: 7px 12px;
     background: var(--drevo-tmave);
     border-top: 3px solid var(--okraj-tmave);
+    flex-wrap: wrap;
 }
 
 .spodni-item {
@@ -457,9 +510,7 @@ body {
 /* =====================================================
    PANEL POSTAVY
 ===================================================== */
-.postava-panel {
-    align-self: start;
-}
+.postava-panel { align-self: start; }
 
 .postava-box {
     background: var(--drevo-plocha);
@@ -526,14 +577,15 @@ body {
 
 .stat-bar { height: 100%; transition: width 0.4s; }
 
-.hp-bar  { background: #E74C3C; }
-.hp-bar.low  { background: #E67E22; }
+.hp-bar          { background: #E74C3C; }
+.hp-bar.low      { background: #E67E22; }
 .hp-bar.critical { background: #E74C3C; animation: blik 0.5s infinite; }
 
 @keyframes blik {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.4; }
 }
+
 .mp-bar  { background: #3498DB; }
 .str-bar { background: #E67E22; }
 .spd-bar { background: #2ECC71; }
@@ -541,7 +593,7 @@ body {
 .stat-hodnota {
     font-size: 7px;
     color: var(--text);
-    width: 26px;
+    width: 40px;
     text-align: right;
 }
 
@@ -563,9 +615,7 @@ body {
     background: rgba(92, 184, 92, 0.08);
 }
 
-.crafting-radek.crafting-hotovo {
-    opacity: 0.4;
-}
+.crafting-radek.crafting-hotovo { opacity: 0.4; }
 
 .crafting-ingredience {
     display: flex;
@@ -580,21 +630,11 @@ body {
 .craft-nema { color: var(--cervena); text-decoration: line-through; }
 .craft-plus { color: var(--text-svetly); font-weight: bold; }
 
-.crafting-sipka {
-    color: var(--zluta);
-    font-size: 12px;
-}
+.crafting-sipka { color: var(--zluta); font-size: 12px; }
 
-.crafting-vysledek {
-    font-size: 11px;
-    flex: 1;
-    min-width: 0;
-}
+.crafting-vysledek { font-size: 11px; flex: 1; min-width: 0; }
 
-.craft-rarity {
-    color: var(--text-svetly);
-    font-size: 10px;
-}
+.craft-rarity { color: var(--text-svetly); font-size: 10px; }
 
 .btn-craft {
     background: var(--drevo-tmave);
@@ -611,15 +651,12 @@ body {
     white-space: nowrap;
 }
 
-.btn-craft:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
+.btn-craft:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-craft:not(:disabled):hover { background: var(--zelena); color: #fff; }
 
-.btn-craft:not(:disabled):hover {
-    background: var(--zelena);
-    color: #fff;
-}
+/* =====================================================
+   OBCHOD
+===================================================== */
 .cena-text {
     font-size: 11px;
     color: var(--zluta);
@@ -630,10 +667,16 @@ body {
 .btn-prodat {
     background: rgba(201,168,76,0.15);
     color: var(--zluta);
-    border-color: var(--zluta-tmava, #7a5c1e);
+    border-top:    2px solid #7a5c1e;
+    border-left:   2px solid #7a5c1e;
+    border-right:  2px solid #3a2a0a;
+    border-bottom: 2px solid #3a2a0a;
     font-size: 9px;
     width: auto;
     padding: 0 8px;
+    height: 26px;
+    cursor: pointer;
+    font-family: 'Cousine', monospace;
 }
 
 .btn-pruzkum {
@@ -649,10 +692,8 @@ body {
     cursor: pointer;
 }
 
-.btn-pruzkum:disabled {
-    opacity: 0.5;
-    cursor: default;
-}
+.btn-pruzkum:disabled { opacity: 0.5; cursor: default; }
+
 .btn-pouzit {
     width: 100%;
     padding: 7px;
@@ -667,4 +708,13 @@ body {
     cursor: pointer;
     text-align: center;
     margin-top: 6px;
+}
+
+/* =====================================================
+   HERNÍ DEN
+===================================================== */
+.den-text {
+    font-size: 10px;
+    color: var(--zluta);
+    letter-spacing: 1px;
 }

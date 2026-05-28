@@ -117,6 +117,11 @@ const inventar = new Inventar(50);
 
 let zlato = 100;        // Počáteční zlaté mince hráče
 let aktualniHp = 100;   // Aktuální životy hráče (mění se průzkumem a lektvary)
+let herniDen = 1;
+
+function vykresliDen(): void {
+    (document.getElementById("den-text") as HTMLElement).textContent = `${herniDen}`;
+}
 
 // Vrátí cenu předmětu podle jeho rarity (vzácnější = dražší)
 function getCena(p: Polozka): number {
@@ -162,6 +167,8 @@ function restartHry(): void {
     vykresliDetail();
     vykresliPostavu();
     vykresliZlato();
+    herniDen = 1;
+    vykresliDen();
 }
 
 // ============================================================
@@ -230,6 +237,8 @@ function pruzkum(): void {
             btn.textContent = "⚔ PRŮZKUM";
         }
     }, 1000); // Každou sekundu
+    herniDen++;
+    vykresliDen();
 }
 
 // ============================================================
@@ -667,6 +676,7 @@ vykresliInventar();  // Zobraz prázdný inventář
 vykresliDetail();    // Zobraz prázdný detail
 vykresliPostavu();   // Spočítej a zobraz staty
 vykresliZlato();     // Zobraz počáteční zlaté
+vykresliDen();      // Zobraz herní den
 
 // Konzolový výpis všech předmětů s jejich efektivitou (pro ladění/školní účely)
 const vsechnyPredmety: Polozka[] = [...zbrane, ...brneni, ...lektvary];
