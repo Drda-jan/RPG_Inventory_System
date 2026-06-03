@@ -1,178 +1,270 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
+    <!-- Zajistí správné zobrazení na mobilních zařízeních – bez toho by mobil
+         zobrazil stránku jako zmenšenou desktop verzi -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG Inventory Systém</title>
+    <!-- Načtení našeho CSS souboru se styly -->
     <link rel="stylesheet" href="style.css">
+    <!-- Načtení písma Cousine z internetu – podporuje českou diakritiku -->
     <link href="https://fonts.googleapis.com/css2?family=Cousine&display=swap" rel="stylesheet" />
 </head>
 <body>
-<!-- OKNO SMRTI -->
-<div id="smrt-okno" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; align-items:center; justify-content:center; flex-direction:column; gap:20px;">
-    <div style="font-family:'Cousine',monospace; font-size:32px; color:#E74C3C;">☠ ZEMŘEL JSI ☠</div>
-    <div style="font-family:'Cousine',monospace; font-size:14px; color:#aaa;">Tvoje dobrodružství skončilo.</div>
-    <button id="btn-restart" style="font-family:'Cousine',monospace; font-size:14px; padding:12px 24px; background:#8B2020; border:2px solid #C04040; color:#FFB0B0; cursor:pointer;">⚔ ZKUSIT ZNOVU</button>
+
+<!-- ============================================================
+     OKNO SMRTI
+     Zobrazí se přes celou obrazovku když HP hráče klesne na 0.
+     Defaultně je skryté – JavaScript ho zobrazí při smrti hráče.
+     CSS třída "smrt-okno" definuje jeho vzhled v style.css.
+============================================================ -->
+<div id="smrt-okno">
+    <div class="smrt-titul">☠ ZEMŘEL JSI ☠</div>
+    <div class="smrt-text">Tvoje dobrodružství skončilo.</div>
+    <!-- Tlačítko restartu – JavaScript na něj naváže funkci restartHry()
+         která vyprázdní inventář a obnoví HP/zlato na výchozí hodnoty -->
+    <button id="btn-restart" class="btn-restart">⚔ ZKUSIT ZNOVU</button>
 </div>
-    <div class="hlavni-okno">
 
-        <!-- titulní lišta -->
-        <div class="titul-lista">
-            <span>🎒 INVENTORY</span>
+<!-- ============================================================
+     HLAVNÍ OKNO
+     Obaluje celou aplikaci. Má pixel art border efekt
+     a roztahuje se na celou výšku obrazovky (min-height: 100vh).
+============================================================ -->
+<div class="hlavni-okno">
+
+    <!-- Titulní lišta nahoře s názvem aplikace -->
+    <div class="titul-lista">
+        <span>🎒 INVENTORY</span>
+    </div>
+
+    <!-- Informační/chybová hláška – normálně neviditelná.
+         JavaScript ji zobrazí na 3 sekundy když se něco stane
+         (nemáš dost zlata, inventář je plný, průzkum atd.) -->
+    <div id="chyba"></div>
+
+    <!-- ============================================================
+         HLAVNÍ GRID – rozložení stránky do 4 sloupců vedle sebe:
+         [ikony kategorií] [inventář/obchod/craft] [detail předmětu] [postava]
+
+         Na mobilních zařízeních (méně než 768px) se přehodí
+         na jeden sloupec – vše pod sebou. (Nastaveno v style.css)
+    ============================================================ -->
+    <div class="obsah">
+
+        <!-- LEVÝ PANEL – ikony pro filtrování obchodu podle kategorie.
+             Každé tlačítko má data-filtr="..." který JavaScript přečte
+             a zobrazí jen předměty dané kategorie v obchodě.
+             Třída "aktivni" zvýrazní právě vybrané tlačítko. -->
+        <div class="levy-panel">
+            <button class="kategorie-btn aktivni" data-filtr="vse"     title="Vše">⚙️</button>
+            <button class="kategorie-btn"         data-filtr="zbran"   title="Zbraně">⚔️</button>
+            <button class="kategorie-btn"         data-filtr="brneni"  title="Brnění">👘</button>
+            <button class="kategorie-btn"         data-filtr="lektvar" title="Lektvary">🧪</button>
+            <button class="kategorie-btn"         data-filtr="svitek"  title="Svitky">📜</button>
         </div>
 
-        <!-- chybová hláška -->
-        <div id="chyba"></div>
+        <!-- STŘEDNÍ PANEL – hlavní obsah aplikace.
+             Obsahuje přepínací záložky a tři panely pod nimi.
+             Vždy je vidět jen jeden panel – ostatní jsou skryté. -->
+        <div class="stredni-panel">
 
-        <!-- hlavní grid: levy-panel | stredni-panel | pravy-panel | postava-panel -->
-        <div class="obsah">
-
-            <!-- LEVÝ PANEL – tlačítka kategorií -->
-            <div class="levy-panel">
-                <button class="kategorie-btn aktivni" data-filtr="vse"     title="Vše">⚙️</button>
-                <button class="kategorie-btn"         data-filtr="zbran"   title="Zbraně">⚔️</button>
-                <button class="kategorie-btn"         data-filtr="brneni"  title="Brnění">👘</button>
-                <button class="kategorie-btn"         data-filtr="lektvar" title="Lektvary">🧪</button>
-                <button class="kategorie-btn" data-filtr="svitek" title="Svitky">📜</button>
+            <!-- Záložky – kliknutím přepínáš mezi inventářem, obchodem a craftingem.
+                 data-tab="..." říká JavaScriptu který panel má zobrazit.
+                 Třída "aktivni" podtrhne právě otevřenou záložku. -->
+            <div class="zalozky">
+                <div class="zalozka aktivni" data-tab="inventar">INVENTÁŘ</div>
+                <div class="zalozka"         data-tab="nabidka">🪙 OBCHOD</div>
+                <div class="zalozka"         data-tab="crafting">⚒️ CRAFT</div>
             </div>
 
-            <!-- STŘEDNÍ PANEL – záložky + mřížka/nabídka -->
-            <div class="stredni-panel">
-
-                <div class="zalozky">
-                    <div class="zalozka aktivni" data-tab="inventar">INVENTÁŘ</div>
-                    <div class="zalozka"         data-tab="nabidka">🪙OBCHOD</div>
-                    <div class="zalozka"         data-tab="crafting">⚒️CRAFT</div>
-                </div>
-
-                <div class="mrizka-wrap" id="panel-inventar">
-                    <div class="mrizka-nazev">ITEM NAME</div>
-                    <div id="inventar-mrizka"></div>
-                </div>
-
-                <div class="mrizka-wrap" id="panel-nabidka" style="display: none;">
-                    <div class="mrizka-nazev">VYBRAT PŘEDMĚT</div>
-                    <div id="nabidka-seznam"></div>
-                </div>
-
-                <div class="mrizka-wrap" id="panel-crafting" style="display: none;">
-                    <div class="mrizka-nazev">⚒️ CRAFTING</div>
-                    <div id="crafting-obsah"></div>
-                </div>
-
-            </div>
-            <!-- konec stredni-panel -->
-
-            <!-- PRAVÝ PANEL – detail vybraného předmětu -->
-            <div class="pravy-panel">
-                <div class="detail-box" id="detail-box">
-                    <div class="prazdny-detail">Vyber<br>předmět</div>
-                </div>
+            <!-- PANEL INVENTÁŘE – mřížka slotů s předměty které hráč vlastní.
+                 id="inventar-mrizka" je prázdný – JavaScript ho dynamicky
+                 naplní sloty při každé změně inventáře. -->
+            <div class="mrizka-wrap" id="panel-inventar">
+                <div class="mrizka-nazev">ITEM NAME</div>
+                <div id="inventar-mrizka"></div>
             </div>
 
-            <!-- PANEL POSTAVY – musí být uvnitř .obsah aby byl ve gridu -->
-            <div class="postava-panel">
-                <div class="postava-box">
-                    <div class="postava-nazev">PLAYER</div>
-                    <div class="postava-avatar">
-                        <svg width="80" height="100" viewBox="0 0 12 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
-                            <!-- vlasy -->
-                            <rect x="3" y="0" width="6" height="1" fill="#5C3D1E"/>
-                            <rect x="3" y="1" width="1" height="1" fill="#5C3D1E"/>
-                            <rect x="8" y="1" width="1" height="1" fill="#5C3D1E"/>
-                            <!-- hlava -->
-                            <rect x="3" y="1" width="6" height="5" fill="#C8A06A"/>
-                            <!-- oči -->
-                            <rect x="4" y="2" width="1" height="1" fill="#3D2B1F"/>
-                            <rect x="7" y="2" width="1" height="1" fill="#3D2B1F"/>
-                            <!-- ústa -->
-                            <rect x="5" y="4" width="2" height="1" fill="#8B4513"/>
-                            <!-- tělo -->
-                            <rect x="2" y="6" width="8" height="5" fill="#4A7A4A"/>
-                            <!-- límec -->
-                            <rect x="4" y="6" width="4" height="1" fill="#3D6B3D"/>
-                            <!-- ruce -->
-                            <rect x="0" y="6" width="2" height="4" fill="#C8A06A"/>
-                            <rect x="10" y="6" width="2" height="4" fill="#C8A06A"/>
-                            <!-- nohy -->
-                            <rect x="2" y="11" width="3" height="5" fill="#3D3D8B"/>
-                            <rect x="7" y="11" width="3" height="5" fill="#3D3D8B"/>
-                            <!-- boty -->
-                            <rect x="2" y="14" width="3" height="2" fill="#3D2B1F"/>
-                            <rect x="7" y="14" width="3" height="2" fill="#3D2B1F"/>
-                        </svg>
+            <!-- PANEL OBCHODU – seznam předmětů k zakoupení za zlaté mince.
+                 Třída "skryty" ho schová – JavaScript ji odstraní
+                 když hráč klikne na záložku OBCHOD.
+                 id="nabidka-seznam" JavaScript naplní řádky s předměty. -->
+            <div class="mrizka-wrap skryty" id="panel-nabidka">
+                <div class="mrizka-nazev">VYBRAT PŘEDMĚT</div>
+                <div id="nabidka-seznam"></div>
+            </div>
+
+            <!-- PANEL CRAFTINGU – seznam receptů pro výrobu nových předmětů.
+                 Třída "skryty" ho schová – JavaScript ji odstraní
+                 když hráč klikne na záložku CRAFT.
+                 id="crafting-obsah" JavaScript naplní recepty. -->
+            <div class="mrizka-wrap skryty" id="panel-crafting">
+                <div class="mrizka-nazev">⚒️ CRAFTING</div>
+                <div id="crafting-obsah"></div>
+            </div>
+
+        </div>
+        <!-- konec stredni-panel -->
+
+        <!-- PRAVÝ PANEL – detail předmětu vybraného v inventáři.
+             id="detail-box" JavaScript naplní informacemi o předmětu
+             (název, váha, rarita, Combat Power, tlačítko ODEBRAT...)
+             po kliknutí na slot v inventáři. -->
+        <div class="pravy-panel">
+            <div class="detail-box" id="detail-box">
+                <!-- Výchozí text před výběrem předmětu -->
+                <div class="prazdny-detail">Vyber<br>předmět</div>
+            </div>
+        </div>
+
+        <!-- PANEL POSTAVY – pixel art avatar hráče a jeho staty.
+             Musí být uvnitř .obsah aby byl součástí 4-sloupcového gridu.
+             JavaScript dynamicky aktualizuje hodnoty HP/STR/SPD
+             a šířky progress barů při každé změně inventáře. -->
+        <div class="postava-panel">
+            <div class="postava-box">
+
+                <div class="postava-nazev">PLAYER</div>
+
+                <!-- Avatar postavy nakreslený jako SVG (vektorová grafika).
+                     viewBox="0 0 12 16" = plátno 12×16 pixelů.
+                     Každý <rect> = jeden pixel postavy s danou barvou (fill).
+                     Třída "avatar-svg" zajišťuje pixel art zobrazení bez vyhlazování. -->
+                <div class="postava-avatar">
+                    <svg width="80" height="100" viewBox="0 0 12 16" xmlns="http://www.w3.org/2000/svg" class="avatar-svg">
+                        <!-- vlasy -->
+                        <rect x="3" y="0" width="6" height="1" fill="#5C3D1E"/>
+                        <rect x="3" y="1" width="1" height="1" fill="#5C3D1E"/>
+                        <rect x="8" y="1" width="1" height="1" fill="#5C3D1E"/>
+                        <!-- hlava -->
+                        <rect x="3" y="1" width="6" height="5" fill="#C8A06A"/>
+                        <!-- oči -->
+                        <rect x="4" y="2" width="1" height="1" fill="#3D2B1F"/>
+                        <rect x="7" y="2" width="1" height="1" fill="#3D2B1F"/>
+                        <!-- ústa -->
+                        <rect x="5" y="4" width="2" height="1" fill="#8B4513"/>
+                        <!-- tělo -->
+                        <rect x="2" y="6" width="8" height="5" fill="#4A7A4A"/>
+                        <!-- límec -->
+                        <rect x="4" y="6" width="4" height="1" fill="#3D6B3D"/>
+                        <!-- ruce -->
+                        <rect x="0" y="6" width="2" height="4" fill="#C8A06A"/>
+                        <rect x="10" y="6" width="2" height="4" fill="#C8A06A"/>
+                        <!-- nohy -->
+                        <rect x="2" y="11" width="3" height="5" fill="#3D3D8B"/>
+                        <rect x="7" y="11" width="3" height="5" fill="#3D3D8B"/>
+                        <!-- boty -->
+                        <rect x="2" y="14" width="3" height="2" fill="#3D2B1F"/>
+                        <rect x="7" y="14" width="3" height="2" fill="#3D2B1F"/>
+                    </svg>
+                </div>
+
+                <!-- Staty postavy – každý stat má ikonu, zkratku, progress bar a číslo.
+                     id="bar-X" – JavaScript mění šířku baru (width) podle aktuální hodnoty.
+                     id="val-X" – JavaScript mění zobrazené číslo. -->
+                <div class="postava-stats">
+
+                    <!-- HP – životy. Klesají při průzkumu, obnoví lektvar zdraví.
+                         Brnění v inventáři zvyšuje maximální HP. -->
+                    <div class="stat-radek">
+                        <span class="stat-ikona">❤️</span>
+                        <span class="stat-nazev">HP</span>
+                        <div class="stat-bar-wrap">
+                            <div class="stat-bar hp-bar" id="bar-hp"></div>
+                        </div>
+                        <span class="stat-hodnota" id="val-hp">100</span>
                     </div>
-                    <div class="postava-stats">
-                        <div class="stat-radek">
-                            <span class="stat-ikona">❤️</span>
-                            <span class="stat-nazev">HP</span>
-                            <div class="stat-bar-wrap">
-                                <div class="stat-bar hp-bar" id="bar-hp" style="width:100%"></div>
-                            </div>
-                            <span class="stat-hodnota" id="val-hp">100</span>
+
+                    <!-- MP – mana. Zatím pevná hodnota 80, lektvary ji neovlivňují. -->
+                    <div class="stat-radek">
+                        <span class="stat-ikona">💧</span>
+                        <span class="stat-nazev">MP</span>
+                        <div class="stat-bar-wrap">
+                            <div class="stat-bar mp-bar" id="bar-mp"></div>
                         </div>
-                        <div class="stat-radek">
-                            <span class="stat-ikona">💧</span>
-                            <span class="stat-nazev">MP</span>
-                            <div class="stat-bar-wrap">
-                                <div class="stat-bar mp-bar" id="bar-mp" style="width:100%"></div>
-                            </div>
-                            <span class="stat-hodnota" id="val-mp">80</span>
-                        </div>
-                        <div class="stat-radek">
-                            <span class="stat-ikona">⚔️</span>
-                            <span class="stat-nazev">STR</span>
-                            <div class="stat-bar-wrap">
-                                <div class="stat-bar str-bar" id="bar-str" style="width:0%"></div>
-                            </div>
-                            <span class="stat-hodnota" id="val-str">0</span>
-                        </div>
-                        <div class="stat-radek">
-                            <span class="stat-ikona">💨</span>
-                            <span class="stat-nazev">SPD</span>
-                            <div class="stat-bar-wrap">
-                                <div class="stat-bar spd-bar" id="bar-spd" style="width:100%"></div>
-                            </div>
-                            <span class="stat-hodnota" id="val-spd">100</span>
-                        </div>
+                        <span class="stat-hodnota" id="val-mp">80</span>
                     </div>
-                </div>
-            </div>
-            <!-- konec postava-panel -->
 
-        </div>
-        <!-- konec obsah -->
+                    <!-- STR – síla. Roste s Combat Power zbraní v inventáři.
+                         Čím silnější zbraně, tím vyšší STR. -->
+                    <div class="stat-radek">
+                        <span class="stat-ikona">⚔️</span>
+                        <span class="stat-nazev">STR</span>
+                        <div class="stat-bar-wrap">
+                            <div class="stat-bar str-bar" id="bar-str"></div>
+                        </div>
+                        <span class="stat-hodnota" id="val-str">0</span>
+                    </div>
 
-        <!-- SPODNÍ LIŠTA -->
-        <div class="spodni-lista">
-            <div class="spodni-item">
-                <span class="ico">⚖️</span>
-                <span id="vaha-text">0/50 kg</span>
-                <div class="vaha-track">
-                    <div class="vaha-pruh" id="vaha-pruh" style="width:0%"></div>
-                </div>
-            </div>
-            <div class="spodni-item">
-                <span class="ico">📦</span>
-                <span id="stat-pocet">0</span> ITEMS
-                <div class="spodni-item">
-                <span class="ico">🪙</span>
-                <span id="zlato-text">100</span> ZLATO
-            </div>
-            <div class="spodni-item">
-                <button class="btn-pruzkum" id="btn-pruzkum">⚔ PRŮZKUM</button>
+                    <!-- SPD – rychlost. Klesá s celkovou vahou inventáře
+                         a s penalizací těžkého brnění. Ovlivňuje odměnu z průzkumu. -->
+                    <div class="stat-radek">
+                        <span class="stat-ikona">💨</span>
+                        <span class="stat-nazev">SPD</span>
+                        <div class="stat-bar-wrap">
+                            <div class="stat-bar spd-bar" id="bar-spd"></div>
+                        </div>
+                        <span class="stat-hodnota" id="val-spd">100</span>
+                    </div>
+
                 </div>
             </div>
         </div>
-            <div class="spodni-item">
-            <span class="ico">📅</span>
-             <span class="den-text">DEN <span id="den-text">1</span></span>
-                </div>
+        <!-- konec postava-panel -->
 
     </div>
-    <!-- konec hlavni-okno -->
+    <!-- konec obsah -->
 
-    <script type="module" src="/dist/script.js"></script>
+    <!-- SPODNÍ LIŠTA – herní informace aktualizované v reálném čase -->
+    <div class="spodni-lista">
+
+        <!-- Aktuální váha inventáře s progress barem.
+             Zelená = OK, žlutá = skoro plný, červená = skoro přetížen. -->
+        <div class="spodni-item">
+            <span class="ico">⚖️</span>
+            <span id="vaha-text">0/50 kg</span>
+            <div class="vaha-track">
+                <div class="vaha-pruh" id="vaha-pruh"></div>
+            </div>
+        </div>
+
+        <!-- Počet předmětů v inventáři -->
+        <div class="spodni-item">
+            <span class="ico">📦</span>
+            <span id="stat-pocet">0</span> ITEMS
+        </div>
+
+        <!-- Zlaté mince hráče – vydělávají se průzkumem, utrácí v obchodě -->
+        <div class="spodni-item">
+            <span class="ico">🪙</span>
+            <span id="zlato-text">100</span> ZLATO
+        </div>
+
+        <!-- Tlačítko průzkumu – odešle hráče na výpravu.
+             Náhodně vydělá zlato nebo způsobí zranění.
+             Po kliknutí je 5 sekund neaktivní (cooldown). -->
+        <div class="spodni-item">
+            <button class="btn-pruzkum" id="btn-pruzkum">⚔ PRŮZKUM</button>
+        </div>
+
+        <!-- Herní den – zvyšuje se s každým průzkumem -->
+        <div class="spodni-item">
+            <span class="ico">📅</span>
+            <span class="den-text">DEN <span id="den-text">1</span></span>
+        </div>
+
+    </div>
+    <!-- konec spodni-lista -->
+
+</div>
+<!-- konec hlavni-okno -->
+
+<!-- Načtení zkompilovaného JavaScriptu ze složky dist/.
+     type="module" je povinné – umožňuje import/export mezi soubory.
+     Umístění na konci těla zajistí že HTML je hotové před spuštěním JS. -->
+<script type="module" src="/dist/script.js"></script>
 
 </body>
 </html>
