@@ -1,30 +1,52 @@
-// potions.ts
-// Třída Elixir – potomek Polozka.
-// "import" načte třídu Polozka z jiného souboru, abychom z ní mohli dědit.
+// potion.ts
+// Třída Lektvar – potomek (dědí z) třídy Polozka.
+// Lektvary se dají použít (tlačítko POUŽÍT v detailu) a po použití zmizí z inventáře.
 
-import { Polozka } from "./polozka.js";
+import { Polozka } from "./polozka.js"; // Načteme rodičovskou třídu z jiného souboru
 
-// Lektvar dědí z Polozka a přidává efekt a typ. 
+// "extends Polozka" = Lektvar dědí vše co má Polozka a přidává svůj efekt a typ.
 export class Lektvar extends Polozka {
-    private readonly efekt: string;
-    private readonly typ: string;
 
-     constructor(id: string, nazev: string, vaha: number, popis: string, zakladniCena: number, rarity: string, multiplikatorRarity: number, trvaniEfektu: number, efekt: string, typ: string) {
+    // ── Vlastnosti specifické pro lektvary ────────────────────────────────────
+    private readonly efekt: string; // Co lektvar dělá: "obnova zdraví", "zvýšení síly"...
+    private readonly typ: string;   // Kategorie: "lektvar zdraví", "elixír"...
+
+    // ── Konstruktor ───────────────────────────────────────────────────────────
+    constructor(
+        id: string,
+        nazev: string,
+        vaha: number,
+        popis: string,
+        zakladniCena: number,
+        rarity: string,
+        multiplikatorRarity: number,
+        trvaniEfektu: number, // 0 = okamžitý účinek, >0 = trvá X sekund
+        efekt: string,
+        typ: string
+    ) {
+        // super() předá společné parametry rodičovské třídě Polozka.
         super(id, nazev, vaha, popis, zakladniCena, rarity, trvaniEfektu, multiplikatorRarity);
+
+        // Efekt musí být vyplněný – prázdný lektvar nedává smysl.
         if (!efekt || efekt.trim() === "") throw new Error("efekt nesmí být prázdný.");
+
         this.efekt = efekt;
-        this.typ = typ;
+        this.typ   = typ;
     }
 
-    public getEfekt()   : string {
-        return this.efekt;
-    }
-    public getTyp() : string {
-        return this.typ;
-    }
+    // ── Gettery ───────────────────────────────────────────────────────────────
+    // getEfekt() používá script.ts při kliknutí na POUŽÍT – podle efektu rozhodne co se stane.
+    // Momentálně zpracovaný efekt je jen "obnova zdraví" (+50 HP).
+    public getEfekt(): string { return this.efekt; }
+    public getTyp():   string { return this.typ; }
 
-    //okamžitý lektvar (trvání = 0) má vždy hodnotu 10.
-    //buff lektvar (trvání > 0) má hodnotu trvání/10 - čím déle trvá, tím je efektivnější.
+    // ── Výpočet efektivity ────────────────────────────────────────────────────
+    // Přepisuje abstraktní metodu z Polozka.
+    // Okamžitý lektvar (trvaniEfektu = 0) má pevnou hodnotu 10.
+    // Buff lektvar (trvaniEfektu > 0) roste s dobou trvání – čím déle trvá, tím je silnější.
+    // Příklad: Lektvar síly (trvani=60)        → 60/10 = 6   (méně než okamžitý)
+    //          Elixír hrdinství (trvani=120)    → 120/10 = 12 (více než okamžitý)
+    //          Lektvar zdraví (trvani=0)        → 10 (pevná hodnota)
     public vypocitejEfektivitu(): number {
         if (this.getTrvaniEfektu() > 0) {
             return this.getTrvaniEfektu() / 10;
