@@ -598,8 +598,3 @@ vykresliZlato();
 vykresliDen();
 prepniTab("inventar"); // Zajistí správné zobrazení první záložky přes classList
 
-// Konzolový výpis pro ladění
-const vsechnyPredmety: Polozka[] = [...zbrane, ...brneni, ...lektvary];
-vsechnyPredmety.forEach(p => {
-    console.log(`${p.getNazev()} | typ: ${p.constructor.name} | efektivita: ${p.vypocitejEfektivitu().toFixed(2)}`);
-});

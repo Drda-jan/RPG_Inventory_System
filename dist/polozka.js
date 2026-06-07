@@ -1,11 +1,15 @@
-// Abstraktní třída = šablona pro všechny předměty v inventáři.
-// Nelze ji použít přímo (new Polozka() nejde) – slouží jen jako základ pro Zbran, Brneni a Lektvar.
-// "export" znamená, že tuto třídu mohou používat ostatní soubory.
+// polozka.ts
+// Základní šablona (abstraktní třída) pro VŠECHNY předměty v inventáři.
+// Zbran, Brneni, Lektvar a Svitek z ní dědí – sdílejí její vlastnosti a metody.
+// "abstract" znamená že tuto třídu nelze použít přímo (new Polozka() nejde),
+// slouží jen jako základ – jako formulář který musí každý potomek vyplnit.
 export class Polozka {
-    // Konstruktor se spustí automaticky při vytvoření každého objektu (new Zbran(...) atd.)
-    // Parametr "popis" přijímáme, ale neukládáme – zatím ho nevyužíváme.
+    // ── Konstruktor ──────────────────────────────────────────────────────────
+    // Spustí se automaticky při každém "new Zbran(...)", "new Brneni(...)" atd.
+    // Parametr "popis" přijímáme ale neukládáme – zatím ho v UI nevyužíváme.
     constructor(id, nazev, vaha, popis, zakladniCena, rarity, trvaniEfektu, multiplikatorRarity) {
-        // Validace – kontrolujeme, jestli nám někdo nepředal nesmyslná data.
+        // ── Validace vstupních dat ────────────────────────────────────────────
+        // Kontrolujeme že nám někdo nepředal nesmyslné hodnoty.
         // Pokud ano, vyhodíme chybu a objekt se vůbec nevytvoří.
         if (!id || id.trim() === "")
             throw new Error("id nesmí být prázdné.");
@@ -15,7 +19,9 @@ export class Polozka {
             throw new Error(`vaha musí být kladná, obdrženo: ${vaha}`);
         if (zakladniCena < 0)
             throw new Error(`zakladniCena nesmí být záporná, obdrženo: ${zakladniCena}`);
-        // Data jsou v pořádku – uložíme je do soukromých proměnných.
+        // ── Uložení dat ───────────────────────────────────────────────────────
+        // Data prošla validací – uložíme je do soukromých proměnných.
+        // trim() odstraní nadbytečné mezery na začátku a konci textu.
         this.id = id.trim();
         this.nazev = nazev.trim();
         this.vaha = vaha;
@@ -24,30 +30,19 @@ export class Polozka {
         this.trvaniEfektu = trvaniEfektu;
         this.multiplikatorRarity = multiplikatorRarity;
     }
-    // Gettery = jediný způsob, jak se zvenku dostat k soukromým proměnným.
-    // Díky tomu nikdo nemůže data náhodně přepsat – může je jen číst.
-    getId() {
-        return this.id;
-    }
-    getNazev() {
-        return this.nazev;
-    }
-    getVaha() {
-        return this.vaha;
-    }
-    getZakladniCena() {
-        return this.zakladniCena;
-    }
-    getRarity() {
-        return this.rarity;
-    }
-    getTrvaniEfektu() {
-        return this.trvaniEfektu;
-    }
-    getMultiplikatorRarity() {
-        return this.multiplikatorRarity;
-    }
-    // toString() se zavolá automaticky, když chceme objekt převést na text.
+    // ── Gettery ───────────────────────────────────────────────────────────────
+    // Jediný způsob jak se zvenku dostat k soukromým proměnným.
+    // Každý getter jen vrátí hodnotu – nikdo ji nemůže přepsat.
+    getId() { return this.id; }
+    getNazev() { return this.nazev; }
+    getVaha() { return this.vaha; }
+    getZakladniCena() { return this.zakladniCena; }
+    getRarity() { return this.rarity; }
+    getTrvaniEfektu() { return this.trvaniEfektu; }
+    getMultiplikatorRarity() { return this.multiplikatorRarity; }
+    // ── toString ──────────────────────────────────────────────────────────────
+    // Zavolá se automaticky když chceme objekt převést na text (např. console.log).
+    // constructor.name vrátí název třídy – "Zbran", "Brneni" atd.
     toString() {
         return `[${this.constructor.name}] ${this.nazev} | Váha: ${this.vaha} kg | Cena: ${this.zakladniCena} zl | Efektivita: ${this.vypocitejEfektivitu().toFixed(2)}`;
     }

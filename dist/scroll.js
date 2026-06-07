@@ -1,19 +1,31 @@
 // scroll.ts
-// třída svitek - potomek polozka
-// svitek je položka, která se může použít a po použití se zničí
-import { Polozka } from "./polozka.js";
+// Třída Svitek – potomek (dědí z) třídy Polozka.
+// Svitky jsou podobné lektvarům – mají efekt a po použití zmizí.
+// Jsou obecně silnější než lektvary (vyšší základní efektivita).
+import { Polozka } from "./polozka.js"; // Načteme rodičovskou třídu z jiného souboru
+// "extends Polozka" = Svitek dědí vše co má Polozka a přidává efekt a typ.
 export class Svitek extends Polozka {
-    constructor(id, nazev, vaha, popis, zakladniCena, rarity, multiplikatorRarity, trvaniEfektu, efekt, typ) {
+    // ── Konstruktor ───────────────────────────────────────────────────────────
+    constructor(id, nazev, vaha, popis, zakladniCena, rarity, multiplikatorRarity, trvaniEfektu, // 0 = okamžitý, >0 = trvá X sekund (např. Svitek ochrany = 30s)
+    efekt, typ) {
+        // super() předá společné parametry rodičovské třídě Polozka.
         super(id, nazev, vaha, popis, zakladniCena, rarity, trvaniEfektu, multiplikatorRarity);
+        // Efekt musí být vyplněný.
         if (!efekt || efekt.trim() === "")
             throw new Error("efekt nesmí být prázdný.");
         this.efekt = efekt;
         this.typ = typ;
     }
+    // ── Gettery ───────────────────────────────────────────────────────────────
     getEfekt() { return this.efekt; }
     getTyp() { return this.typ; }
-    // Okamžitý svitek = 15, svitek s trváním = 15 + trvání/10
-    // Svitky jsou obecně silnější než lektvary – vyšší základní hodnota
+    // ── Výpočet efektivity ────────────────────────────────────────────────────
+    // Přepisuje abstraktní metodu z Polozka.
+    // Svitky začínají na hodnotě 15 (lektvary začínají na 10) – jsou silnější.
+    // Svitek s trváním dostane bonus: 15 + trvání/10.
+    // Příklad: Svitek ohně (trvani=0)          → 15 (pevná hodnota)
+    //          Svitek ochrany (trvani=30)       → 15 + 30/10 = 18
+    //          Svitek teleportace (trvani=0)    → 15
     vypocitejEfektivitu() {
         if (this.getTrvaniEfektu() > 0) {
             return 15 + this.getTrvaniEfektu() / 10;

@@ -1,6 +1,11 @@
 // data.ts
-// Jen surová data – žádná logika
-// Interface definuje tvar každého objektu – TypeScript sám zkontroluje že data sedí
+// Datový soubor – obsahuje POUZE surová data, žádná herní logika.
+// Všechny předměty co existují ve hře jsou definovány tady.
+// script.ts je načte a převede na instance tříd (Zbran, Brneni...).
+// ============================================================
+// ZBRANĚ – dostupné v obchodě
+// ============================================================
+// "export" = tento seznam mohou načíst ostatní soubory (hlavně script.ts)
 export const rawZbrane = [
     { id: "zbr001", nazev: "Meč", popis: "Ostrý meč pro boj na blízko.", typ: "meč", poskozeni: 10, rychlost: 5, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 2.5 },
     { id: "zbr002", nazev: "Dýka", popis: "Malá a rychlá zbraň pro tiché útoky.", typ: "dýka", poskozeni: 5, rychlost: 8, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 0.5 },
@@ -13,6 +18,9 @@ export const rawZbrane = [
     { id: "zbr009", nazev: "Kuše", popis: "Přesná zbraň pro boj na dálku.", typ: "kuše", poskozeni: 20, rychlost: 2, multiplikatorRarity: 1.3, rarity: "neobvyklá", vaha: 4.0 },
     { id: "zbr010", nazev: "Dračí meč", popis: "Legendární meč ukutý z dračích šupin.", typ: "meč", poskozeni: 35, rychlost: 5, multiplikatorRarity: 3.0, rarity: "legendární", vaha: 4.5 },
 ];
+// ============================================================
+// BRNĚNÍ – dostupné v obchodě
+// ============================================================
 export const rawBrneni = [
     { id: "brn001", nazev: "Kožená zbroj", popis: "Lehká zbroj pro základní ochranu.", typ: "kožená zbroj", obrana: 5, rychlost: -1, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 3.0 },
     { id: "brn002", nazev: "Kovová zbroj", popis: "Těžká zbroj pro vysokou ochranu.", typ: "kovová zbroj", obrana: 10, rychlost: -3, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 8.0 },
@@ -24,6 +32,9 @@ export const rawBrneni = [
     { id: "brn008", nazev: "Elfský plášť", popis: "Magický plášť elfů pro nenápadný pohyb.", typ: "plášť", obrana: 6, rychlost: 3, multiplikatorRarity: 1.8, rarity: "vzácná", vaha: 0.8 },
     { id: "brn009", nazev: "Dračí šupiny", popis: "Brnění z pravých dračích šupin.", typ: "šupiny", obrana: 25, rychlost: -2, multiplikatorRarity: 2.5, rarity: "legendární", vaha: 12.0 },
 ];
+// ============================================================
+// LEKTVARY – dostupné v obchodě
+// ============================================================
 export const rawLektvary = [
     { id: "lek001", nazev: "Lektvar zdraví", popis: "Obnovuje zdraví postavy.", typ: "lektvar zdraví", efekt: "obnova zdraví", trvaniEfektu: 0, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 0.5 },
     { id: "lek002", nazev: "Lektvar many", popis: "Obnovuje manu postavy.", typ: "lektvar many", efekt: "obnova many", trvaniEfektu: 0, multiplikatorRarity: 1.0, rarity: "běžná", vaha: 0.5 },
@@ -33,6 +44,9 @@ export const rawLektvary = [
     { id: "lek006", nazev: "Lektvar neviditelnosti", popis: "Dočasně skryje postavu.", typ: "lektvar neviditelnosti", efekt: "neviditelnost", trvaniEfektu: 45, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 0.5 },
     { id: "lek007", nazev: "Elixír hrdinství", popis: "Zvyšuje všechny statistiky najednou.", typ: "elixír", efekt: "vše+", trvaniEfektu: 120, multiplikatorRarity: 3.0, rarity: "legendární", vaha: 0.8 },
 ];
+// ============================================================
+// SVITKY – dostupné v obchodě
+// ============================================================
 export const rawSvitky = [
     { id: "svi001", nazev: "Svitek ohně", popis: "Vyvolá ohnivou kouli.", typ: "svitek", efekt: "ohnivá koule", trvaniEfektu: 0, multiplikatorRarity: 1.5, rarity: "neobvyklá", vaha: 0.2 },
     { id: "svi002", nazev: "Svitek blesku", popis: "Přivolá blesk z nebe.", typ: "svitek", efekt: "blesk", trvaniEfektu: 0, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 0.2 },
@@ -40,6 +54,11 @@ export const rawSvitky = [
     { id: "svi004", nazev: "Svitek ochrany", popis: "Vytvoří magický štít kolem postavy.", typ: "svitek", efekt: "magický štít", trvaniEfektu: 30, multiplikatorRarity: 1.6, rarity: "neobvyklá", vaha: 0.2 },
     { id: "svi005", nazev: "Svitek teleportace", popis: "Okamžitě přemístí postavu na bezpečné místo.", typ: "svitek", efekt: "teleportace", trvaniEfektu: 0, multiplikatorRarity: 2.5, rarity: "vzácná", vaha: 0.2 },
 ];
+// ============================================================
+// CRAFTING RECEPTY – kombinace dvou předmětů → nový předmět
+// ingredience1 a ingredience2 jsou ID předmětů které musí být v inventáři.
+// vysledekId je ID předmětu který se vytvoří (definován níže v rawZbraneCraft atd.)
+// ============================================================
 export const craftingRecepty = [
     { id: "rec001", ingredience1: "zbr001", ingredience2: "svi001", vysledekId: "zbr_ohnivy", nazev: "Ohnivý meč", popis: "Meč + Svitek ohně" },
     { id: "rec002", ingredience1: "zbr002", ingredience2: "lek005", vysledekId: "zbr_otravena", nazev: "Otrávená dýka", popis: "Dýka + Lektvar jedu" },
@@ -49,16 +68,23 @@ export const craftingRecepty = [
     { id: "rec006", ingredience1: "svi002", ingredience2: "zbr007", vysledekId: "zbr_bleskove", nazev: "Bleskové žezlo", popis: "Svitek blesku + Hůl mága" },
     { id: "rec007", ingredience1: "lek006", ingredience2: "brn008", vysledekId: "brn_stinu", nazev: "Plášť stínů", popis: "Lektvar neviditelnosti + Elfský plášť" },
 ];
+// ============================================================
+// PŘEDMĚTY DOSTUPNÉ POUZE PŘES CRAFTING
+// Tyto předměty nejdou koupit v obchodě – lze je získat jen kombinací receptů výše.
+// ============================================================
+// Zbraně vyrobitelné craftingem
 export const rawZbraneCraft = [
     { id: "zbr_ohnivy", nazev: "Ohnivý meč", popis: "Meč prosycený ohněm.", typ: "meč", poskozeni: 22, rychlost: 5, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 2.5 },
     { id: "zbr_otravena", nazev: "Otrávená dýka", popis: "Dýka namočená v jedu.", typ: "dýka", poskozeni: 14, rychlost: 9, multiplikatorRarity: 1.8, rarity: "neobvyklá", vaha: 0.5 },
     { id: "zbr_valecne", nazev: "Válečné kladivo", popis: "Kladivo opatřené kovovými hroty.", typ: "kladivo", poskozeni: 28, rychlost: 3, multiplikatorRarity: 1.8, rarity: "neobvyklá", vaha: 6.0 },
     { id: "zbr_bleskove", nazev: "Bleskové žezlo", popis: "Žezlo kanalizující blesky.", typ: "hůl", poskozeni: 30, rychlost: 6, multiplikatorRarity: 2.5, rarity: "vzácná", vaha: 1.5 },
 ];
+// Brnění vyrobitelné craftingem
 export const rawBrneniCraft = [
     { id: "brn_elfi", nazev: "Elfská zbroj", popis: "Lehká zbroj s elfskou magií.", typ: "kožená zbroj", obrana: 12, rychlost: 2, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 3.0 },
     { id: "brn_stinu", nazev: "Plášť stínů", popis: "Plášť splývající s tmou.", typ: "plášť", obrana: 10, rychlost: 5, multiplikatorRarity: 2.5, rarity: "vzácná", vaha: 0.8 },
 ];
+// Lektvary vyrobitelné craftingem
 export const rawLektvaryCraft = [
     { id: "lek_vitalita", nazev: "Elixír vitality", popis: "Obnovuje zdraví i sílu najednou.", typ: "elixír", efekt: "obnova zdraví + síla", trvaniEfektu: 90, multiplikatorRarity: 2.0, rarity: "vzácná", vaha: 0.5 },
 ];

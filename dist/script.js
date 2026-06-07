@@ -410,6 +410,10 @@ function prepniTab(tab) {
     // Odeber třídu "aktivni" ze všech záložek a přidej ji na tu kliknutou
     document.querySelectorAll(".zalozka").forEach(z => z.classList.remove("aktivni"));
     (_a = document.querySelector(`[data-tab="${tab}"]`)) === null || _a === void 0 ? void 0 : _a.classList.add("aktivni");
+    // Vymaž případné inline display styly zanechané starým kódem
+    panelInv.style.display = "";
+    panelNab.style.display = "";
+    panelCraft.style.display = "";
     // Skryj všechny panely přes CSS třídu (ne inline style!)
     panelInv.classList.add("skryty");
     panelNab.classList.add("skryty");
@@ -513,8 +517,4 @@ vykresliDetail();
 vykresliPostavu();
 vykresliZlato();
 vykresliDen();
-// Konzolový výpis pro ladění
-const vsechnyPredmety = [...zbrane, ...brneni, ...lektvary];
-vsechnyPredmety.forEach(p => {
-    console.log(`${p.getNazev()} | typ: ${p.constructor.name} | efektivita: ${p.vypocitejEfektivitu().toFixed(2)}`);
-});
+prepniTab("inventar"); // Zajistí správné zobrazení první záložky přes classList
