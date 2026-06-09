@@ -36,7 +36,7 @@ body {
 }
 
 /* =====================================================
-   PIXEL BORDER MIXIN
+   PIXEL BORDERS
 ===================================================== */
 .pixel-box {
     background: var(--drevo-plocha);
@@ -60,8 +60,7 @@ body {
 ===================================================== */
 .hlavni-okno {
     width: 100%;
-    max-width: 1100px;
-    min-height: 50vh;
+    max-width: 1200px;
     background: var(--drevo-tmave);
     border-top:    4px solid #C4895A;
     border-left:   4px solid #C4895A;
@@ -79,6 +78,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .titul-lista span {
@@ -89,48 +89,127 @@ body {
 }
 
 /* =====================================================
-   ROZLOŽENÍ – desktop: 4 sloupce
+   HLAVNÍ GRID – DESKTOP (>1024px): 4 sloupce
+   levy | stredni | pravy | postava
 ===================================================== */
 .obsah {
     display: grid;
-    grid-template-columns: 54px 1fr 200px 160px;
+    grid-template-columns: 54px 1fr 170px 150px;
+    grid-template-areas: "levy stred pravy postava";
     gap: 8px;
     padding: 8px;
-    flex: 1;
     align-items: start;
-    min-height: 60px;
 }
 
+.levy-panel    { grid-area: levy; }
+.stredni-panel { grid-area: stred; }
+.pravy-panel   { grid-area: pravy; }
+.postava-panel { grid-area: postava; }
+
 /* =====================================================
-   TABLET – 768–1024px: 3 sloupce (bez pravého detailu)
+   TABLET VELKÝ (769–1024px): 3 sloupce
+   levy | stredni | [pravy + postava vedle sebe napravo]
 ===================================================== */
 @media (max-width: 1024px) and (min-width: 769px) {
     .obsah {
         grid-template-columns: 54px 1fr 180px;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "levy stred postava"
+            "levy stred pravy";
+        align-items: start;
     }
 
-    /* Panel postavy přejde pod střední panel */
-    .postava-panel {
-        grid-column: 1 / -1;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    /* Detail box se přesune pod mřížku */
     .pravy-panel {
-        width: 100%;
+        align-self: start;
+    }
+
+    .postava-panel {
+        align-self: start;
     }
 
     #inventar-mrizka {
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .slot {
+        height: 52px;
+        font-size: 20px;
     }
 }
 
 /* =====================================================
-   MOBIL – max 768px: vše pod sebou
+   TABLET MALÝ (481–768px): 2 sloupce
+   levy+postava nahoře, stred+pravy dole
 ===================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px) and (min-width: 481px) {
+    .obsah {
+        grid-template-columns: 1fr 160px;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "postava postava"
+            "stred   pravy"
+            "levy    pravy";
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .postava-panel {
+        align-self: start;
+    }
+
+    .postava-box {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .postava-nazev {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--drevo-stredni);
+    }
+
+    .postava-avatar {
+        width: auto;
+        flex-shrink: 0;
+        padding: 8px;
+    }
+
+    .postava-stats {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .levy-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-self: start;
+    }
+
+    .kategorie-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    #inventar-mrizka {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .slot {
+        height: 52px;
+        font-size: 20px;
+    }
+}
+
+/* =====================================================
+   MOBIL (≤480px): 1 sloupec, vše pod sebou
+===================================================== */
+@media (max-width: 480px) {
     body {
         padding: 4px;
         align-items: stretch;
@@ -143,22 +222,43 @@ body {
 
     .obsah {
         grid-template-columns: 1fr;
+        grid-template-areas:
+            "postava"
+            "stred"
+            "pravy"
+            "levy";
         gap: 6px;
         padding: 6px;
     }
 
-    /* ── Pořadí panelů na mobilu:
-          1. postava-panel (player nahoře)
-          2. stredni-panel (inventář / obsah)
-          3. pravy-panel   (detail)
-          4. levy-panel    (filtry dole)
-    ── */
-    .postava-panel  { order: 1; }
-    .stredni-panel  { order: 2; }
-    .pravy-panel    { order: 3; }
-    .levy-panel     { order: 4; }
+    /* Panel postavy – kompaktní řada */
+    .postava-box {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px;
+    }
 
-    /* ── Levý panel: kategorie jdou do řádku ── */
+    .postava-nazev {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--drevo-stredni);
+    }
+
+    .postava-avatar {
+        width: auto;
+        flex-shrink: 0;
+        padding: 6px;
+    }
+
+    .postava-stats {
+        flex: 1;
+        min-width: 130px;
+    }
+
+    /* Levý panel – kategorie do řádku */
     .levy-panel {
         flex-direction: row;
         flex-wrap: wrap;
@@ -171,17 +271,15 @@ body {
         font-size: 18px;
     }
 
-    /* ── Záložky – menší font ── */
-    .zalozky {
-        gap: 3px;
-    }
+    /* Záložky */
+    .zalozky { gap: 3px; }
 
     .zalozka {
         padding: 5px 10px;
         font-size: 8px;
     }
 
-    /* ── Mřížka inventáře – 5 sloupců na mobilu ── */
+    /* Mřížka – 5 sloupců */
     #inventar-mrizka {
         grid-template-columns: repeat(5, 1fr);
     }
@@ -191,40 +289,10 @@ body {
         font-size: 20px;
     }
 
-    /* ── Pravý panel (detail) + postava – plná šířka ── */
-    .pravy-panel,
-    .postava-panel {
-        width: 100%;
-    }
+    /* Detail box – plná šířka */
+    .detail-box { width: 100%; }
 
-    /* Panel postavy – kompaktní řada nahoře ── */
-    .postava-box {
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 8px;
-    }
-
-    .postava-nazev {
-        width: 100%;
-        border-bottom: 1px solid var(--drevo-stredni);
-        padding-bottom: 5px;
-        text-align: center;
-    }
-
-    .postava-avatar {
-        width: 80px;
-        flex-shrink: 0;
-        padding: 6px;
-    }
-
-    .postava-stats {
-        flex: 1;
-        min-width: 120px;
-    }
-
-    /* ── Spodní lišta – zalamuje se ── */
+    /* Spodní lišta */
     .spodni-lista {
         flex-wrap: wrap;
         gap: 8px;
@@ -233,34 +301,21 @@ body {
 
     .vaha-track { width: 80px; }
 
-    /* ── Nabídka – neomezená výška ── */
+    /* Nabídka – neomezená výška */
     #nabidka-seznam { max-height: none; }
 
-    /* ── Detail box – plná šířka ── */
-    .detail-box { width: 100%; }
-
-    /* ── Crafting ingredience – zalamuje se ── */
+    /* Crafting */
     .crafting-radek {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
     }
 
-    /* ── Nazev itemu – větší na mobilu ── */
-    .mrizka-nazev {
-        font-size: 10px;
-    }
+    /* Nabídka řádky */
+    .nabidka-radek { padding: 8px; }
+    .nabidka-nazev { font-size: 12px; }
 
-    /* ── Nabídka řádky – větší hit area ── */
-    .nabidka-radek {
-        padding: 8px 8px;
-    }
-
-    .nabidka-nazev {
-        font-size: 12px;
-    }
-
-    /* ── Btn plus – větší na mobilu ── */
+    /* Btn plus */
     .btn-plus {
         width: 32px;
         height: 32px;
@@ -275,6 +330,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    align-self: start;
 }
 
 .kategorie-btn {
@@ -312,6 +368,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0; /* zabrání přetékání v gridu */
 }
 
 .zalozky {
@@ -334,6 +391,7 @@ body {
     border-bottom: 2px solid var(--drevo-tmave);
     letter-spacing: 0.5px;
     -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
 }
 
 .zalozka.aktivni {
@@ -443,6 +501,7 @@ body {
     flex: 1;
     font-size: 13px;
     color: var(--text);
+    min-width: 0;
 }
 
 .nabidka-vaha { font-size: 10px; color: var(--text-svetly); }
@@ -483,6 +542,7 @@ body {
     flex-direction: column;
     gap: 6px;
     align-self: start;
+    min-width: 0;
 }
 
 .detail-box {
@@ -563,69 +623,12 @@ body {
 }
 
 /* =====================================================
-   SPODNÍ LIŠTA
-===================================================== */
-.spodni-lista {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 7px 12px;
-    background: var(--drevo-tmave);
-    border-top: 3px solid var(--okraj-tmave);
-    flex-wrap: wrap;
-}
-
-.spodni-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    color: var(--okraj-svetle);
-}
-
-.spodni-item .ico { font-size: 14px; }
-
-.vaha-track {
-    width: 120px;
-    height: 12px;
-    background: var(--drevo-stredni);
-    border-top:    2px solid var(--okraj-tmave);
-    border-left:   2px solid var(--okraj-tmave);
-    border-right:  2px solid var(--okraj-svetle);
-    border-bottom: 2px solid var(--okraj-svetle);
-    overflow: hidden;
-}
-
-.vaha-pruh {
-    height: 100%;
-    background: var(--zelena);
-    transition: width 0.3s, background 0.3s;
-}
-
-.vaha-pruh.varovani  { background: var(--zluta); }
-.vaha-pruh.nebezpeci { background: var(--cervena); }
-
-/* =====================================================
-   CHYBOVÁ HLÁŠKA
-===================================================== */
-#chyba {
-    display: none;
-    font-size: 8px;
-    color: #FFB0B0;
-    background: #5C0000;
-    border-top:    2px solid #C04040;
-    border-left:   2px solid #C04040;
-    border-right:  2px solid #4A0000;
-    border-bottom: 2px solid #4A0000;
-    padding: 6px 10px;
-    margin: 4px 8px 0;
-    line-height: 2;
-}
-
-/* =====================================================
    PANEL POSTAVY
 ===================================================== */
-.postava-panel { align-self: start; }
+.postava-panel {
+    align-self: start;
+    min-width: 0;
+}
 
 .postava-box {
     background: var(--drevo-plocha);
@@ -713,6 +716,69 @@ body {
 }
 
 /* =====================================================
+   SPODNÍ LIŠTA
+===================================================== */
+.spodni-lista {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 7px 12px;
+    background: var(--drevo-tmave);
+    border-top: 3px solid var(--okraj-tmave);
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.spodni-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--okraj-svetle);
+    white-space: nowrap;
+}
+
+.spodni-item .ico { font-size: 14px; }
+
+.vaha-track {
+    width: 120px;
+    height: 12px;
+    background: var(--drevo-stredni);
+    border-top:    2px solid var(--okraj-tmave);
+    border-left:   2px solid var(--okraj-tmave);
+    border-right:  2px solid var(--okraj-svetle);
+    border-bottom: 2px solid var(--okraj-svetle);
+    overflow: hidden;
+}
+
+.vaha-pruh {
+    height: 100%;
+    background: var(--zelena);
+    transition: width 0.3s, background 0.3s;
+}
+
+.vaha-pruh.varovani  { background: var(--zluta); }
+.vaha-pruh.nebezpeci { background: var(--cervena); }
+
+/* =====================================================
+   CHYBOVÁ HLÁŠKA
+===================================================== */
+#chyba {
+    display: none;
+    font-size: 8px;
+    color: #FFB0B0;
+    background: #5C0000;
+    border-top:    2px solid #C04040;
+    border-left:   2px solid #C04040;
+    border-right:  2px solid #4A0000;
+    border-bottom: 2px solid #4A0000;
+    padding: 6px 10px;
+    margin: 4px 8px 0;
+    line-height: 2;
+    flex-shrink: 0;
+}
+
+/* =====================================================
    CRAFTING
 ===================================================== */
 .crafting-radek {
@@ -778,6 +844,7 @@ body {
     color: var(--zluta);
     min-width: 55px;
     text-align: right;
+    white-space: nowrap;
 }
 
 .btn-prodat {
@@ -794,6 +861,7 @@ body {
     cursor: pointer;
     font-family: 'Cousine', monospace;
     -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
 }
 
 .btn-pruzkum {
@@ -808,6 +876,7 @@ body {
     color: #5CB85C;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
 }
 
 .btn-pruzkum:disabled { opacity: 0.5; cursor: default; }
@@ -880,11 +949,7 @@ body {
 }
 
 /* SVG avatar bez vyhlazování */
-.avatar-svg {
-    image-rendering: pixelated;
-}
+.avatar-svg { image-rendering: pixelated; }
 
 /* Třída pro skryté panely */
-.skryty {
-    display: none;
-}
+.skryty { display: none; }
